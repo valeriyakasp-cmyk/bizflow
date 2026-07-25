@@ -2158,6 +2158,11 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 <helmet data-dc-atomics>
 <style>
 body{margin:0;background:#EDF0F6;font-family:'Assistant',sans-serif}
+/* The page itself must never scroll: the app is exactly one screen tall and every
+   list scrolls inside its own pane. Without this, iOS drags the whole document and
+   the header and the tab bar slide out of view. */
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+[style*="overflow-y:auto"]{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 a{color:#007AFF;text-decoration:none}a:hover{color:#0062CC}
 input,select{font-family:'Assistant',sans-serif;color:#111827}
 input::placeholder{color:#AEB4BE}
@@ -2169,8 +2174,8 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
 .glass-plus:active{transform:scale(.96);background:rgba(235,248,255,.9)!important;border-color:rgba(7,135,212,.3)!important}
 @media(max-width:600px){
   body{background:#F3F6FB}
-  body>div{padding:0!important;width:100vw!important;height:100dvh!important;min-height:100dvh!important}
-  #bizflow-app-root{width:100vw!important;height:100dvh!important;min-width:0!important}
+  body>div{padding:0!important;width:100vw!important;height:100dvh!important;min-height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}
+  #bizflow-app-root{width:100vw!important;height:100dvh!important;max-height:100dvh!important;min-width:0!important}
   [data-om-starter="ios-frame"]{width:100vw!important;height:100dvh!important;border-radius:0!important;box-shadow:none!important}
 }
 @keyframes cfall{0%{transform:translateY(-30px) rotate(0deg);opacity:1}100%{transform:translateY(760px) rotate(540deg);opacity:0}}
@@ -2687,7 +2692,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
 </sc-if>
 
 <!-- ======= Tab bar ======= -->
-<div style="position:absolute;bottom:0;left:0;right:0;height:76px;background:rgba(255,255,255,.66);backdrop-filter:blur(28px) saturate(130%);-webkit-backdrop-filter:blur(28px) saturate(130%);border-top:1px solid rgba(255,255,255,.85);box-shadow:0 -8px 30px rgba(35,52,74,.06);display:flex;align-items:flex-start;padding:12px 14px 0;box-sizing:border-box;z-index:6">
+<div style="position:absolute;bottom:0;left:0;right:0;height:calc(76px + env(safe-area-inset-bottom));background:rgba(255,255,255,.66);backdrop-filter:blur(28px) saturate(130%);-webkit-backdrop-filter:blur(28px) saturate(130%);border-top:1px solid rgba(255,255,255,.85);box-shadow:0 -8px 30px rgba(35,52,74,.06);display:flex;align-items:flex-start;padding:12px 14px env(safe-area-inset-bottom);box-sizing:border-box;z-index:6">
   <button onClick="{{ goHome }}" style="flex:1;border:none;background:none;cursor:pointer;display:flex;justify-content:center;padding:0"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 20v-7M12 20V5M19 20v-9" stroke="{{ tHome }}" stroke-width="2" stroke-linecap="round"></path></svg></button>
   <button onClick="{{ goClients }}" style="flex:1;border:none;background:none;cursor:pointer;display:flex;justify-content:center;padding:0"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8.5" r="3.4" stroke="{{ tClients }}" stroke-width="1.9"></circle><path d="M3.5 19.5c.6-3.1 2.9-4.7 5.5-4.7s4.9 1.6 5.5 4.7" stroke="{{ tClients }}" stroke-width="1.9" stroke-linecap="round"></path><path d="M15.5 5.6a3.4 3.4 0 010 5.8M17.7 15c1.6.7 2.8 2.2 3.1 4.5" stroke="{{ tClients }}" stroke-width="1.9" stroke-linecap="round"></path></svg></button>
   <button onClick="{{ goFinance }}" style="flex:1;border:none;background:none;cursor:pointer;display:flex;justify-content:center;padding:0"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M9.9 7.9L8.8 5.4c-.2-.45.13-.95.62-.95h5.16c.49 0 .82.5.62.95L14.1 7.9" stroke="{{ tFinance }}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path><path d="M9.9 7.9h4.2c2.9 1.1 4.9 3.6 4.9 6.4 0 3.2-2.5 5.1-7 5.1s-7-1.9-7-5.1c0-2.8 2-5.3 4.9-6.4z" stroke="{{ tFinance }}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path><path d="M13.6 11.9c-.35-.45-2-.7-2.6.35-.6 1.05.85 1.45 1.35 1.6.5.15 1.95.55 1.35 1.6-.6 1.05-2.25.8-2.6.35" stroke="{{ tFinance }}" stroke-width="1.4" stroke-linecap="round"></path><path d="M12.35 10.9v.7M12.35 16.2v.7" stroke="{{ tFinance }}" stroke-width="1.4" stroke-linecap="round"></path></svg></button>
@@ -3485,6 +3490,12 @@ class Component extends DCLogic {
     clearTimeout(this._ct);
     this._ct = setTimeout(() => this.setState({ confetti: false }), 3000);
   }
+  /* Fired only when money is confirmed as received — inside a client's project,
+     on an invoice or an approved quote. Marking something back to unpaid is
+     silent. */
+  celebratePayment() {
+    if (this.props.confettiOn ?? true) this.fireConfetti();
+  }
   renderVals() {
     const S = this.state, d = S.data;
     const set = k => e => this.setState({ [k]: e.target.value });
@@ -3621,8 +3632,9 @@ class Component extends DCLogic {
         desc: i.description, amountF: this.fmt(i.amount),
         payDateLabel: i.expectedPaymentDate ? this.fmtDate(i.expectedPaymentDate) : 'בסוף הפרויקט',
         chipLabel: paid ? 'שולם' : 'ממתין לתשלום', chipBg: paid ? 'rgba(214,244,229,.9)' : 'rgba(255,240,214,.9)', chipColor: paid ? '#149361' : '#C77E0A',
-        toggle: () => this.upd(x => { const v = x.invoices.find(z => z.id === i.id);
-          v.status = paid ? 'pending' : 'paid'; v.finalPaid = !paid; v.paidAt = paid ? null : new Date().toISOString(); }),
+        toggle: () => { this.upd(x => { const v = x.invoices.find(z => z.id === i.id);
+          v.status = paid ? 'pending' : 'paid'; v.finalPaid = !paid; v.paidAt = paid ? null : new Date().toISOString(); });
+          if (!paid) this.celebratePayment(); },
         del: () => this.upd(x => { x.invoices = x.invoices.filter(z => z.id !== i.id); x.costs = x.costs.filter(z => z.invoiceId !== i.id); }),
         edit: () => this.setState({ modal: 'doc', docType: 'edit', editInvId: i.id, fAmount: String(i.amount), fDesc: i.description, fDate: i.sentDate || i.expectedPaymentDate || new Date().toISOString().slice(0,10),
           fFileName: i.attachName || '', fFileData: i.attachData || '', fAgreementName: (i.docs || {}).agreement || '', fAgreementData: (i.docData || {}).agreement || '',
@@ -3635,8 +3647,10 @@ class Component extends DCLogic {
             color: nm ? '#0E86D4' : '#626A78',
             up: async e => { const f = e.target.files && e.target.files[0]; if (!f) return;
               let data = ''; try { data = await this.readFileData(f); } catch(err) {}
+              const wasPaid = i.status === 'paid';
               this.upd(x => { const v = x.invoices.find(z => z.id === i.id); v.docs = v.docs || {}; v.docData = v.docData || {}; v.docs[key] = f.name; v.docData[key] = data;
-                if (key === 'receipt') { v.status = 'paid'; v.finalPaid = true; v.receiptIssuedAt = new Date().toISOString(); v.paidAt = v.paidAt || v.receiptIssuedAt; } }); } };
+                if (key === 'receipt') { v.status = 'paid'; v.finalPaid = true; v.receiptIssuedAt = new Date().toISOString(); v.paidAt = v.paidAt || v.receiptIssuedAt; } });
+              if (key === 'receipt' && !wasPaid) this.celebratePayment(); } };
         }),
         costCount: costs.length ? String(costs.length) : '',
         hasCostCount: costs.length > 0,
@@ -3651,9 +3665,11 @@ class Component extends DCLogic {
           ['הפרויקט הסתיים', 'projectComplete'],
           ['התשלום התקבל', 'finalPaid']
         ].map(([label, key]) => ({ label, checked: !!i[key], color: i[key] ? '#149361' : '#626A78',
-          toggle: e => this.upd(x => { const v = x.invoices.find(z => z.id === i.id); v[key] = e.target.checked; if (key === 'finalPaid') {
-            v.status = e.target.checked ? 'paid' : 'pending'; v.paidAt = e.target.checked ? new Date().toISOString() : null;
-          } }) })),
+          toggle: e => { const on = e.target.checked;
+            this.upd(x => { const v = x.invoices.find(z => z.id === i.id); v[key] = on; if (key === 'finalPaid') {
+              v.status = on ? 'paid' : 'pending'; v.paidAt = on ? new Date().toISOString() : null;
+            } });
+            if (key === 'finalPaid' && on) this.celebratePayment(); } })),
         hasCosts: true,
         grossF: this.fmt(i.amount),
         costTotalF: this.fmt(costSum),
@@ -3684,15 +3700,16 @@ class Component extends DCLogic {
         fileName: q.fileName || '', fileColor: q.fileName ? '#0E86D4' : '#9299A5',
         receiptName: q.receiptName || '', receiptColor: q.receiptName ? '#149361' : '#9299A5',
         upload: async e => { const f = e.target.files && e.target.files[0]; if (f) { let data = ''; try { data = await this.readFileData(f); } catch(err) {} this.upd(x => { const v = x.quotes.find(z => z.id === q.id); v.fileName = f.name; v.fileData = data; }); } },
-        uploadReceipt: async e => { const f = e.target.files && e.target.files[0]; if (f) { let data = ''; try { data = await this.readFileData(f); } catch(err) {} this.upd(x => { const v = x.quotes.find(z => z.id === q.id); v.receiptName = f.name; v.receiptData = data; v.depositPaid = true; v.depositPaidAt = v.depositPaidAt || new Date().toISOString(); v.status = 'approved'; v.approvedAt = v.approvedAt || v.depositPaidAt; }); } },
+        uploadReceipt: async e => { const f = e.target.files && e.target.files[0]; if (f) { let data = ''; try { data = await this.readFileData(f); } catch(err) {} this.upd(x => { const v = x.quotes.find(z => z.id === q.id); v.receiptName = f.name; v.receiptData = data; v.depositPaid = true; v.depositPaidAt = v.depositPaidAt || new Date().toISOString(); v.status = 'approved'; v.approvedAt = v.approvedAt || v.depositPaidAt; }); if (!depositPaid) this.celebratePayment(); } },
         cycle: () => this.upd(x => { const v = x.quotes.find(z => z.id === q.id);
           v.status = displayStatus === 'expired' || v.status === 'pending' ? 'approved' : v.status === 'approved' ? 'rejected' : 'pending';
           if (v.status === 'approved' && !v.approvedAt) v.approvedAt = new Date().toISOString();
           if (v.status !== 'approved') v.approvedAt = null; }),
-        toggleDeposit: () => this.upd(x => { const v = x.quotes.find(z => z.id === q.id); if (!v) return;
+        toggleDeposit: () => { this.upd(x => { const v = x.quotes.find(z => z.id === q.id); if (!v) return;
           v.depositPaid = !depositPaid;
           v.depositPaidAt = v.depositPaid ? new Date().toISOString() : null;
-          if (v.depositPaid) { v.status = 'approved'; if (!v.approvedAt) v.approvedAt = v.depositPaidAt; } }),
+          if (v.depositPaid) { v.status = 'approved'; if (!v.approvedAt) v.approvedAt = v.depositPaidAt; } });
+          if (!depositPaid) this.celebratePayment(); },
         del: () => this.upd(x => { x.quotes = x.quotes.filter(z => z.id !== q.id); }) };
     });
     const nowDate = new Date();
@@ -3835,7 +3852,10 @@ class Component extends DCLogic {
     }));
 
     return Object.assign(base, {
-      incomeF: this.fmt(income), receivedF: 'התקבל ' + this.fmt(received), pendingF: 'ממתין ' + this.fmt(income - received),
+      /* The headline figure counts money that actually arrived. Invoices still
+         waiting are shown beside it as צפי / ממתין, and they keep driving the
+         allocation card below, which is a forecast rather than a balance. */
+      incomeF: this.fmt(received), receivedF: 'צפי ' + this.fmt(income), pendingF: 'ממתין ' + this.fmt(income - received),
       netF: this.fmtSigned(net), s50F: this.fmt(distributable * 0.5), s25aF: this.fmt(distributable * 0.25), s25bF: this.fmt(distributable * 0.25),
       hasDed: fixedTotal + costsMonth > 0, dedF: this.fmt(fixedTotal + costsMonth) + '-',
       bdRows: [{ label: 'הכנסה · ' + base.monthLabel, amountF: this.fmt(income), color: '#149361' }]
