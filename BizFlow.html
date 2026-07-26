@@ -91,18 +91,24 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
   </div>
   <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(24px) saturate(125%);-webkit-backdrop-filter:blur(24px) saturate(125%);border:1px solid rgba(255,255,255,.82);border-radius:24px;padding:16px 18px;margin-bottom:9px;box-shadow:0 14px 36px rgba(32,49,70,.09),0 4px 14px rgba(32,49,70,.045),inset 0 1px 0 rgba(255,255,255,.95)">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px">
-      <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#9299A5;font-weight:600">חיובים חודשיים קבועים<sc-if value="{{ hasUsd }}" hint-placeholder-val="{{ false }}"><button onClick="{{ toggleRateTip }}" style="width:16px;height:16px;border-radius:999px;border:1px solid #C9CDD5;background:rgba(255,255,255,.75);color:#9299A5;font-size:10.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;font-family:'Assistant',sans-serif;line-height:1;flex:none">?</button></sc-if></span>
-      <button onClick="{{ openAddFixed }}" style="border:none;background:none;color:#007AFF;font-size:13px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;padding:2px 4px">+ חיוב</button>
+      <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#9299A5;font-weight:600">מנויים חודשיים<sc-if value="{{ hasUsd }}" hint-placeholder-val="{{ false }}"><button onClick="{{ toggleRateTip }}" style="width:16px;height:16px;border-radius:999px;border:1px solid #C9CDD5;background:rgba(255,255,255,.75);color:#9299A5;font-size:10.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;font-family:'Assistant',sans-serif;line-height:1;flex:none">?</button></sc-if></span>
+      <button onClick="{{ openAddFixed }}" style="border:none;background:none;color:#007AFF;font-size:13px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;padding:2px 4px">+ מנוי</button>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column">
       <sc-for list="{{ fixedChips }}" as="fx" hint-placeholder-count="1">
-        <span style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.85);border-radius:999px;padding:6px 8px 6px 12px;font-size:13px;font-weight:500;color:#626A78;box-shadow:0 4px 14px rgba(32,49,70,.05)">
-          <span onClick="{{ fx.edit }}" style="cursor:pointer">{{ fx.label }}</span>
-          <button onClick="{{ fx.del }}" style="border:none;background:none;cursor:pointer;padding:0 2px;color:#AEB4BE;font-size:14px;line-height:1">×</button>
-        </span>
+        <div onClick="{{ fx.edit }}" style="display:flex;align-items:center;gap:11px;padding:10px 2px;cursor:pointer;border-bottom:1px solid rgba(17,24,39,.05);opacity:{{ fx.rowOpacity }}">
+          <span style="width:34px;height:34px;border-radius:12px;background:{{ fx.dayBg }};display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none;line-height:1">
+            <span style="font-size:14px;font-weight:700;color:{{ fx.dayColor }};font-variant-numeric:tabular-nums">{{ fx.day }}</span>
+          </span>
+          <span style="flex:1;min-width:0">
+            <span style="display:block;font-size:14.5px;font-weight:600;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ fx.name }}</span>
+            <span style="display:block;font-size:11.5px;color:{{ fx.noteColor }};font-weight:500;margin-top:1px">{{ fx.note }}</span>
+          </span>
+          <span style="font-size:14.5px;font-weight:600;color:#111827;font-variant-numeric:tabular-nums;flex:none">{{ fx.amountF }}</span>
+        </div>
       </sc-for>
       <sc-if value="{{ fixedEmpty }}" hint-placeholder-val="{{ false }}">
-        <span style="font-size:13px;color:#9299A5;font-weight:500;padding:4px 2px">אין חיובים קבועים</span>
+        <span style="font-size:13px;color:#9299A5;font-weight:500;padding:6px 2px">אין מנויים רשומים</span>
       </sc-if>
     </div>
     <sc-if value="{{ rateTipOpen }}" hint-placeholder-val="{{ false }}">
@@ -742,15 +748,25 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
       <div style="font-size:12.5px;color:#626A78;font-weight:500;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.75);border-radius:14px;padding:8px 14px;margin-bottom:12px">{{ fixUsdHint }}</div>
     </sc-if>
     <label style="display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.84);background:rgba(255,255,255,.5);border-radius:16px;padding:11px 15px;cursor:pointer;margin-bottom:12px;box-sizing:border-box"><input type="file" style="display:none" onChange="{{ hFixReceipt }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6" stroke="#626A78" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="font-size:13.5px;font-weight:500;color:#626A78">{{ fixReceiptLabel }}</span></label>
+    <div style="font-size:12.5px;color:#9299A5;font-weight:600;margin:2px 4px 6px">{{ fixedDateLabel }}</div>
+    <input value="{{ fFixDate }}" onChange="{{ hFixDate }}" type="date" style="width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.6);border-radius:16px;padding:12px 16px;font-size:15px;margin-bottom:6px">
+    <div style="font-size:11.5px;color:#9299A5;font-weight:500;margin:0 4px 12px;line-height:1.5">{{ fixedDateHint }}</div>
     <sc-if value="{{ fixedEditing }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:#626A78;font-weight:500;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.75);border-radius:14px;padding:9px 14px;margin-bottom:12px"><span style="width:6px;height:6px;border-radius:999px;background:#149361;flex:none"></span>{{ fixedSinceLabel }}</div>
     </sc-if>
     <button onClick="{{ saveFixed }}" style="width:100%;border:1px solid rgba(255,255,255,.85);border-radius:26px;min-height:52px;font-size:16.5px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;background:radial-gradient(75% 100% at 18% 15%,rgba(255,255,255,.72) 0%,rgba(255,255,255,.22) 38%,rgba(255,255,255,0) 70%),radial-gradient(55% 90% at 88% 48%,rgba(255,255,255,.68) 0%,rgba(255,255,255,.12) 46%,rgba(255,255,255,0) 76%),linear-gradient(135deg,#CDEFFC 0%,#87D8FA 22%,#4FC6FA 48%,#45C1F8 62%,#78D2F9 78%,#DFF5FC 100%);color:#fff;box-shadow:0 18px 38px rgba(69,193,248,.20),0 6px 18px rgba(69,193,248,.12);text-shadow:0 1px 3px rgba(21,102,160,.4)">שמור</button>
     <sc-if value="{{ fixedEditing }}" hint-placeholder-val="{{ false }}">
-      <button onClick="{{ cancelFixed }}" style="width:100%;border:1px solid rgba(216,73,73,.3);border-radius:26px;min-height:48px;margin-top:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;background:rgba(255,255,255,.7);color:#D84949">{{ fixedCancelLabel }}</button>
-      <div style="font-size:12px;color:#9299A5;font-weight:500;text-align:center;margin-top:8px;line-height:1.5">{{ fixedCancelHint }}</div>
+      <button onClick="{{ openCancelFixed }}" style="width:100%;border:1px solid rgba(216,73,73,.3);border-radius:26px;min-height:48px;margin-top:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;background:rgba(255,255,255,.7);color:#D84949">ביטול המנוי</button>
       <button onClick="{{ eraseFixed }}" style="width:100%;border:none;background:none;margin-top:12px;font-size:12px;font-weight:500;color:#AEB4BE;cursor:pointer;font-family:'Assistant',sans-serif;text-decoration:underline;padding:4px">{{ eraseFixedLabel }}</button>
     </sc-if>
+  </sc-if>
+
+  <sc-if value="{{ mFixedCancel }}" hint-placeholder-val="{{ false }}">
+    <div style="font-size:20px;font-weight:600;margin-bottom:6px;text-align:center;color:#111827">ביטול {{ cancelFixedName }}</div>
+    <div style="font-size:13px;color:#9299A5;font-weight:500;text-align:center;margin-bottom:18px;line-height:1.5">מתי ביטלת אותו?</div>
+    <input value="{{ fFixEndDate }}" onChange="{{ hFixEndDate }}" type="date" style="width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.6);border-radius:16px;padding:12px 16px;font-size:15px;margin-bottom:12px">
+    <div style="display:flex;align-items:flex-start;gap:9px;font-size:12.5px;color:#626A78;font-weight:500;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.75);border-radius:14px;padding:11px 14px;margin-bottom:16px;line-height:1.6"><span style="width:6px;height:6px;border-radius:999px;background:#C77E0A;flex:none;margin-top:6px"></span><span>{{ cancelFixedHint }}</span></div>
+    <button onClick="{{ confirmCancelFixed }}" style="width:100%;border:1px solid rgba(255,255,255,.85);border-radius:26px;min-height:52px;font-size:16.5px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;background:radial-gradient(75% 100% at 18% 15%,rgba(255,255,255,.72) 0%,rgba(255,255,255,.22) 38%,rgba(255,255,255,0) 70%),linear-gradient(135deg,#F0A0A0 0%,#E07878 45%,#D84949 100%);color:#fff;box-shadow:0 18px 38px rgba(216,73,73,.18),0 6px 18px rgba(216,73,73,.10);text-shadow:0 1px 3px rgba(120,30,30,.35)">אישור הביטול</button>
   </sc-if>
 
   <sc-if value="{{ mExpense }}" hint-placeholder-val="{{ false }}">
@@ -803,7 +819,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;500px&quot;,&quot;height&quot;:&quot;960px&quot;},&quot;showAiButton&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;התנהגות&quot;},&quot;confettiOn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;התנהגות&quot;}}">
 class Component extends DCLogic {
   state = {
-    screen: 'home', clientId: null, finTab: 'save', expPersonal: false, savePersonal: false,
+    screen: 'home', clientId: null, finTab: 'save', fFixDate: '', fFixEndDate: '', expPersonal: false, savePersonal: false,
     modal: null, docType: 'invoice', expandedInv: null, confetti: false, clientProfitPeriod: 'year', clientSection: 'invoices',
     aiOpen: false, aiMsgs: [], aiTyping: false, aiAsk: false, fAiText: '', fabPos: null, payHover: null, fFileName: '', fFileData: '',
     fName: '', fClientType: 'company', fPayType: 'net60', fAmount: '', fDesc: '', fDate: new Date().toISOString().slice(0,10),
@@ -887,7 +903,10 @@ class Component extends DCLogic {
     d.fixed = (d.fixed || []).map(f => ({ ...f, currency: f.currency || 'ILS',
       /* Charges that predate this field are treated as always-having-run, so no
          past month changes the day the field is introduced. */
-      startMonth: f.startMonth || '2000-01', endMonth: f.endMonth || null,
+      startMonth: f.startMonth || (f.startDate ? String(f.startDate).slice(0,7) : '2000-01'),
+      endMonth: f.endMonth || (f.endDate ? String(f.endDate).slice(0,7) : null),
+      startDate: f.startDate || null, endDate: f.endDate || null,
+      billingDay: f.billingDay || (f.startDate ? Number(String(f.startDate).slice(8,10)) : null),
       receiptName: f.receiptName || null, receiptData: f.receiptData || null }));
     d.costs = (d.costs || []).map(c => ({ ...c, receiptName: c.receiptName || null, receiptData: c.receiptData || null }));
     this.syncAutoAllocations(d);
@@ -1924,26 +1943,39 @@ class Component extends DCLogic {
           shadow: sel ? '0 6px 16px rgba(32,49,70,.10)' : 'none', pick: () => this.setState({ finTab: val }) }; }),
       expToggle: mkToggle([['עסקיות', false], ['אישיות', true]], null, 'expPersonal'),
       fixedEmpty: fixedRunning.length === 0, hasFixed: fixedRunning.length > 0, fixedTotalF: this.fmt(fixedTotal) + '-',
-      fixedChips: fixedRunning.map(f => ({
-        /* Both business and personal charges are listed here, since both come off
-           the month's income before anything is split. */
-        label: (f.currency === 'USD'
-          ? f.name + ' · $' + f.amount + ' ≈ ' + this.fmt(this.toIls(f.amount, 'USD'))
-          : f.name + ' · ' + this.fmt(f.amount)) + (f.isPersonal ? ' · אישי' : '') + (f.endMonth === refKey ? ' · חודש אחרון' : ''),
+      fixedChips: fixedRunning.map(f => {
+        /* Business and personal charges sit together, since both come off the
+           month's income before anything is split. */
+        const ending = f.endMonth === refKey;
+        const notes = [];
+        if (f.billingDay) notes.push('מחויב ב־' + f.billingDay + ' בחודש');
+        else notes.push('תאריך חיוב לא נקבע');
+        if (f.currency === 'USD') notes.push('$' + f.amount);
+        if (f.isPersonal) notes.push('אישי');
+        if (ending) notes.push('חודש אחרון');
+        return {
+        day: f.billingDay ? String(f.billingDay) : '–',
+        name: f.name,
+        note: notes.join(' · '),
+        noteColor: ending ? '#C77E0A' : '#9299A5',
+        amountF: this.fmt(this.toIls(f.amount, f.currency)),
+        rowOpacity: ending ? '.62' : '1',
+        dayBg: ending ? 'rgba(255,240,214,.9)' : 'rgba(152,221,249,.26)',
+        dayColor: ending ? '#C77E0A' : '#0E86D4',
         edit: () => this.setState({ modal: 'fixed', fFixId: f.id, fFixName: f.name, fFixAmt: String(f.amount), fFixCur: f.currency || 'ILS',
-          fFixReceiptName: f.receiptName || '', fFixReceiptData: f.receiptData || '' }),
+          fFixDate: f.startDate || '', fFixReceiptName: f.receiptName || '', fFixReceiptData: f.receiptData || '' }),
         /* Cancelling closes the charge at the current month and never deletes it.
            The month you are in was already paid for — including one you signed up
            for today — so it has to keep counting. Erasing a charge outright is a
            separate action, for typing mistakes only. */
         del: () => this.upd(x => {
           const v = x.fixed.find(z => z.id === f.id); if (v) v.endMonth = nowKey;
-        }) })),
+        }) }; }),
       hasUsd: fixedRunning.some(f => f.currency === 'USD'),
       rateNote: 'המרה לפי שער דולר נוכחי: ₪' + (S.usdRate || 3.7).toFixed(2) + ' לדולר, מתעדכן אוטומטית',
       rateTipOpen: S.rateTipOpen,
       toggleRateTip: e => { e.stopPropagation(); this.setState({ rateTipOpen: !S.rateTipOpen }); },
-      openAddFixed: () => this.setState({ modal: 'fixed', fFixId: null, fFixName: '', fFixAmt: '', fFixCur: 'ILS', fFixReceiptName: '', fFixReceiptData: '' }),
+      openAddFixed: () => this.setState({ modal: 'fixed', fFixId: null, fFixName: '', fFixAmt: '', fFixCur: 'ILS', fFixDate: this.isoDate(new Date()), fFixReceiptName: '', fFixReceiptData: '' }),
       mFixed: S.modal === 'fixed',
       fixedTitle: S.fFixId ? 'עריכת מנוי' : 'מנוי חדש',
       fixedEditing: !!S.fFixId,
@@ -1953,15 +1985,23 @@ class Component extends DCLogic {
         if (st === '2000-01') return 'פעיל · נספר בכל החודשים עד היום';
         return 'פעיל מאז ' + new Date(st + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long', year: 'numeric' });
       })(),
-      fixedCancelLabel: 'ביטול המנוי',
-      fixedCancelHint: (() => {
-        const thisMonth = new Date(nowKey + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long' });
-        const next = new Date(this.shiftMonthKey(nowKey, 1) + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long' });
-        return 'כבר שילמת עליו ב' + thisMonth + ', אז ' + thisMonth + ' עדיין נספר. החיוב נפסק מ' + next + ', והחודשים שעברו לא זזים';
+      fixedDateLabel: S.fFixId ? 'תאריך החיוב החודשי' : 'מתי חויבת עליו בפעם הראשונה?',
+      fixedDateHint: 'היום בחודש נלקח מהתאריך הזה — הוא גם קובע מאיזה חודש המנוי מתחיל להיספר בניכויים',
+      fFixDate: S.fFixDate, hFixDate: e => this.setState({ fFixDate: e.target.value }),
+      openCancelFixed: () => this.setState({ modal: 'fixedCancel', fFixEndDate: this.isoDate(new Date()) }),
+      mFixedCancel: S.modal === 'fixedCancel',
+      cancelFixedName: (d.fixed.find(z => z.id === S.fFixId) || {}).name || 'המנוי',
+      fFixEndDate: S.fFixEndDate, hFixEndDate: e => this.setState({ fFixEndDate: e.target.value }),
+      cancelFixedHint: (() => {
+        const iso = S.fFixEndDate || this.isoDate(new Date());
+        const key = iso.slice(0, 7);
+        const monthName = k => new Date(k + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long', year: 'numeric' });
+        return 'כבר חויבת ב' + monthName(key).split(' ')[0] + ', אז החודש הזה עדיין יורד מהניכויים. מ' +
+          monthName(this.shiftMonthKey(key, 1)).split(' ')[0] + ' הוא מפסיק, והחודשים שלפני לא זזים';
       })(),
-      cancelFixed: () => { this.upd(x => {
-          const v = x.fixed.find(z => z.id === S.fFixId); if (v) v.endMonth = nowKey;
-        }); this.setState({ modal: null, fFixId: null }); },
+      confirmCancelFixed: () => { const iso = S.fFixEndDate || this.isoDate(new Date());
+        this.upd(x => { const v = x.fixed.find(z => z.id === S.fFixId); if (v) { v.endDate = iso; v.endMonth = iso.slice(0, 7); } });
+        this.setState({ modal: null, fFixId: null }); },
       /* Kept apart from cancelling, and worded so it cannot be mistaken for it:
          this one really does erase the charge from every month it appeared in. */
       eraseFixedLabel: 'הוספתי בטעות · מחיקה מכל החודשים',
@@ -1986,16 +2026,22 @@ class Component extends DCLogic {
             v.name = S.fFixName.trim();
             v.receiptName = S.fFixReceiptName || v.receiptName || null;
             v.receiptData = S.fFixReceiptData || v.receiptData || null;
+            if (S.fFixDate) { v.startDate = S.fFixDate; v.billingDay = Number(S.fFixDate.slice(8,10)); }
             if (priceChanged && hasHistory) {
               /* Close the old price at last month and start the new one now, so a
                  price rise never rewrites what earlier months actually cost. */
               v.endMonth = this.shiftMonthKey(now, -1);
               x.fixed.push({ id: this.uid(), name: S.fFixName.trim(), amount: a, currency: S.fFixCur,
                 isPersonal: v.isPersonal, startMonth: now, endMonth: null,
+                startDate: v.startDate, endDate: null, billingDay: v.billingDay,
                 receiptName: v.receiptName, receiptData: v.receiptData });
             } else { v.amount = a; v.currency = S.fFixCur; }
           }
-          else x.fixed.push({ id: this.uid(), name: S.fFixName.trim(), amount: a, currency: S.fFixCur, isPersonal: S.expPersonal, startMonth: this.thisMonthKey(), endMonth: null, receiptName: S.fFixReceiptName || null, receiptData: S.fFixReceiptData || null });
+          else { const iso = S.fFixDate || this.isoDate(new Date());
+            x.fixed.push({ id: this.uid(), name: S.fFixName.trim(), amount: a, currency: S.fFixCur,
+              isPersonal: S.expPersonal, startDate: iso, endDate: null,
+              startMonth: iso.slice(0, 7), endMonth: null, billingDay: Number(iso.slice(8, 10)),
+              receiptName: S.fFixReceiptName || null, receiptData: S.fFixReceiptData || null }); }
         });
         this.setState({ modal: null }); },
       showPersonalBudget: S.expPersonal,
