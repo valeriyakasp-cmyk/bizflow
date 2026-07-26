@@ -119,9 +119,18 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
     </sc-if>
     <sc-if value="{{ hasFixed }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:11px;border-top:1px solid rgba(17,24,39,.06)">
-        <span style="font-size:13.5px;color:#626A78;font-weight:500">יורד כל חודש</span>
+        <span style="font-size:13.5px;color:#626A78;font-weight:500">יורד החודש</span>
         <span style="font-size:16px;font-weight:600;color:#D84949;font-variant-numeric:tabular-nums">{{ fixedTotalF }}</span>
       </div>
+      <sc-if value="{{ fixedNextChanged }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:9px">
+          <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#9299A5;font-weight:500"><span style="width:6px;height:6px;border-radius:999px;background:{{ fixedNextColor }};flex:none"></span>{{ fixedNextLabel }}</span>
+          <span style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:11.5px;font-weight:600;color:{{ fixedNextColor }};background:{{ fixedNextBg }};border-radius:999px;padding:2px 8px;white-space:nowrap">{{ fixedNextDeltaF }}</span>
+            <span style="font-size:15px;font-weight:600;color:{{ fixedNextColor }};font-variant-numeric:tabular-nums">{{ fixedNextTotalF }}</span>
+          </span>
+        </div>
+      </sc-if>
     </sc-if>
   </div>
   <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:9px">
@@ -1521,6 +1530,7 @@ class Component extends DCLogic {
         return live(a) - live(b) || (a.billingDay || 99) - (b.billingDay || 99);
       });
     const fixedTotal = fixedRunning.reduce((s, f) => s + this.toIls(f.amount, f.currency), 0);
+    const nextFixedTotal = this.fixedTotalFor(d, this.shiftMonthKey(refKey, 1));
     const costsMonth = d.costs.filter(c => inRefMonth(c.date)).reduce((s, c) => s + c.amount, 0);
     const net = income - fixedTotal - costsMonth;
     const distributable = Math.max(0, net);
@@ -1954,6 +1964,15 @@ class Component extends DCLogic {
           shadow: sel ? '0 6px 16px rgba(32,49,70,.10)' : 'none', pick: () => this.setState({ finTab: val }) }; }),
       expToggle: mkToggle([['עסקיות', false], ['אישיות', true]], null, 'expPersonal'),
       fixedEmpty: fixedVisible.length === 0, hasFixed: fixedRunning.length > 0, fixedTotalF: this.fmt(fixedTotal) + '-',
+      /* What next month will actually cost, once the cancellations you made this
+         month take effect and anything you just added is counted. Shown only when
+         it differs, so a steady month stays quiet. */
+      fixedNextChanged: nextFixedTotal !== fixedTotal,
+      fixedNextTotalF: this.fmt(nextFixedTotal) + '-',
+      fixedNextLabel: 'ב' + new Date(this.shiftMonthKey(refKey, 1) + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long' }),
+      fixedNextDeltaF: (nextFixedTotal < fixedTotal ? this.fmt(fixedTotal - nextFixedTotal) + ' פחות' : this.fmt(nextFixedTotal - fixedTotal) + ' יותר'),
+      fixedNextColor: nextFixedTotal < fixedTotal ? '#149361' : '#C77E0A',
+      fixedNextBg: nextFixedTotal < fixedTotal ? 'rgba(214,244,229,.9)' : 'rgba(255,240,214,.95)',
       /* Cancelled subscriptions stay on the list instead of vanishing: one month
          marked as its last, and every month after that plainly inactive and not
          counted. Disappearing silently is exactly what made this confusing. */
