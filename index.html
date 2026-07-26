@@ -4199,7 +4199,7 @@ class Component extends DCLogic {
       openAddFixed: () => this.setState({ modal: 'fixed', fFixId: null, fFixName: '', fFixAmt: '', fFixCur: 'ILS', fFixDate: this.isoDate(new Date()), fFixReceiptName: '', fFixReceiptData: '' }),
       mBituach: S.modal === 'bituach',
       bituachSub: new Date().toLocaleDateString('he-IL', { day: 'numeric', month: 'long' }) + ' · התזכורת החודשית שלך',
-      bituachYes: () => { this.confirmBituach(this.thisMonthKey()); this.setState({ modal: null }); },
+      bituachYes: () => { this.confirmBituach(this.thisMonthKey()); this.setState({ modal: null }); this.celebratePayment(); },
       /* Answering "not yet" only closes the sheet. Nothing is written, so the next
          open asks again — which is the whole point of the reminder. */
       bituachNo: () => this.setState({ modal: null }),
