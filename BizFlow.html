@@ -114,6 +114,9 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
         <span style="font-size:13px;color:#9299A5;font-weight:500;padding:6px 2px">אין מנויים רשומים</span>
       </sc-if>
     </div>
+    <sc-if value="{{ fixedHasMore }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ toggleFixedOpen }}" style="width:100%;border:none;background:none;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 0 2px;font-size:12.5px;font-weight:600;color:#007AFF;cursor:pointer;font-family:'Assistant',sans-serif">{{ fixedMoreLabel }}<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="transform:rotate({{ fixedMoreRotate }}deg)"><path d="M6 9l6 6 6-6" stroke="#007AFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+    </sc-if>
     <sc-if value="{{ rateTipOpen }}" hint-placeholder-val="{{ false }}">
       <div style="font-size:12px;color:#626A78;font-weight:500;margin-top:10px;background:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.95);border-radius:14px;padding:8px 14px;box-shadow:0 8px 20px rgba(32,49,70,.08);animation:fadein .15s ease">{{ rateNote }}</div>
     </sc-if>
@@ -829,7 +832,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;500px&quot;,&quot;height&quot;:&quot;960px&quot;},&quot;showAiButton&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;התנהגות&quot;},&quot;confettiOn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;התנהגות&quot;}}">
 class Component extends DCLogic {
   state = {
-    screen: 'home', clientId: null, finTab: 'save', fFixDate: '', fFixEndDate: '', expPersonal: false, savePersonal: false,
+    screen: 'home', clientId: null, finTab: 'save', fFixDate: '', fFixEndDate: '', fixedOpen: false, expPersonal: false, savePersonal: false,
     modal: null, docType: 'invoice', expandedInv: null, confetti: false, clientProfitPeriod: 'year', clientSection: 'invoices',
     aiOpen: false, aiMsgs: [], aiTyping: false, aiAsk: false, fAiText: '', fabPos: null, payHover: null, fFileName: '', fFileData: '',
     fName: '', fClientType: 'company', fPayType: 'net60', fAmount: '', fDesc: '', fDate: new Date().toISOString().slice(0,10),
@@ -1964,6 +1967,12 @@ class Component extends DCLogic {
           shadow: sel ? '0 6px 16px rgba(32,49,70,.10)' : 'none', pick: () => this.setState({ finTab: val }) }; }),
       expToggle: mkToggle([['עסקיות', false], ['אישיות', true]], null, 'expPersonal'),
       fixedEmpty: fixedVisible.length === 0, hasFixed: fixedRunning.length > 0, fixedTotalF: this.fmt(fixedTotal) + '-',
+      /* Long lists collapse to the three most immediate charges — the sort already
+         puts the live ones on top, so what stays visible is what still costs. */
+      fixedHasMore: fixedVisible.length > 3,
+      fixedMoreLabel: S.fixedOpen ? 'צמצום הרשימה' : 'הצגת כל ' + fixedVisible.length + ' המנויים',
+      fixedMoreRotate: S.fixedOpen ? '180' : '0',
+      toggleFixedOpen: () => this.setState({ fixedOpen: !S.fixedOpen }),
       /* What next month will actually cost, once the cancellations you made this
          month take effect and anything you just added is counted. Shown only when
          it differs, so a steady month stays quiet. */
@@ -1984,7 +1993,7 @@ class Component extends DCLogic {
       /* Cancelled subscriptions stay on the list instead of vanishing: one month
          marked as its last, and every month after that plainly inactive and not
          counted. Disappearing silently is exactly what made this confusing. */
-      fixedChips: fixedVisible.map(f => {
+      fixedChips: (S.fixedOpen ? fixedVisible : fixedVisible.slice(0, 3)).map(f => {
         const ending = this.fixedRunning(f, refKey) && f.endMonth === refKey;
         const stopped = !this.fixedRunning(f, refKey);
         const monthName = k => new Date(k + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long' });
