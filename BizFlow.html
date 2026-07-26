@@ -876,7 +876,11 @@ class Component extends DCLogic {
           date: e.date, createdAt: (e.date || new Date().toISOString().slice(0,10)) + 'T12:00:00', isBusiness: true, source: 'expense', expenseId: e.id });
       }
     });
-    d.fixed = (d.fixed || []).map(f => ({ ...f, currency: f.currency || 'ILS', receiptName: f.receiptName || null, receiptData: f.receiptData || null }));
+    d.fixed = (d.fixed || []).map(f => ({ ...f, currency: f.currency || 'ILS',
+      /* Charges that predate this field are treated as always-having-run, so no
+         past month changes the day the field is introduced. */
+      startMonth: f.startMonth || '2000-01', endMonth: f.endMonth || null,
+      receiptName: f.receiptName || null, receiptData: f.receiptData || null }));
     d.costs = (d.costs || []).map(c => ({ ...c, receiptName: c.receiptName || null, receiptData: c.receiptData || null }));
     this.syncAutoAllocations(d);
     d.inspiration = (d.inspiration || []).map(v => ({ ...v, rating: Math.min(5, Math.max(1, Number(v.rating) || 3)),
@@ -1051,8 +1055,18 @@ class Component extends DCLogic {
       clientName(c.clientId), c.date, c.amount, c.receiptName, c.receiptData, { source: 'cost', id: c.id })));
     d.cash.filter(c => (c.pot || (c.isBusiness ? 'biz' : 'personal')) === 'biz' && c.type === 'withdrawal' && isYear(c.date)).forEach(c => expenses.push(row('משיכת עסק', c.id,
       c.description, 'קופת העסק', c.date, c.amount, c.receiptName, c.receiptData, { source: 'cash', id: c.id })));
-    d.fixed.filter(f => !f.isPersonal).forEach(f => expenses.push(row('הוצאה חודשית', f.id, f.name,
-      'חודשי × 12', String(year) + '-12-31', this.toIls(f.amount, f.currency) * 12, f.receiptName, f.receiptData, { source: 'fixed', id: f.id })));
+    d.fixed.filter(f => !f.isPersonal).forEach(f => {
+      /* Only the months this charge was actually running count towards the year. */
+      let months = 0;
+      for (let m = 1; m <= 12; m++) {
+        const k = String(year) + '-' + String(m).padStart(2, '0');
+        if (this.fixedRunning(f, k)) months++;
+      }
+      if (!months) return;
+      expenses.push(row('הוצאה חודשית', f.id, f.name,
+        'חודשי × ' + months, String(year) + '-12-31', this.toIls(f.amount, f.currency) * months,
+        f.receiptName, f.receiptData, { source: 'fixed', id: f.id }));
+    });
     const newestFirst = rows => rows.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
     newestFirst(receipts); newestFirst(documents); newestFirst(expenses);
     const receiptTotal = receipts.filter(r => r.hasFile).reduce((s, r) => s + r.amount, 0);
@@ -1324,11 +1338,28 @@ class Component extends DCLogic {
      into בזבוזים on its own, recorded as a plain deposit so it reads like any
      other movement. The running month is skipped — it is not closed yet — and
      each month is written at most once. */
+  /* A cancelled subscription is not deleted, it is closed at a month. That is
+     what keeps March looking like March after you cancel in July. */
+  fixedRunning(f, key) {
+    return key >= (f.startMonth || '2000-01') && (!f.endMonth || key <= f.endMonth);
+  }
+  fixedTotalFor(d, key) {
+    return (d.fixed || []).filter(f => this.fixedRunning(f, key))
+      .reduce((s, f) => s + this.toIls(f.amount, f.currency), 0);
+  }
+  thisMonthKey() {
+    const n = new Date();
+    return n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0');
+  }
+  shiftMonthKey(key, delta) {
+    const dt = new Date(key + '-01T12:00:00');
+    dt.setMonth(dt.getMonth() + delta);
+    return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0');
+  }
   syncAutoAllocations(d) {
     if (!d || !Array.isArray(d.cash)) return;
     const mk = iso => String(iso || '').slice(0, 7);
     const quoteDate = q => String(q.approvedAt || q.date || '').slice(0, 10);
-    const fixedTotal = (d.fixed || []).reduce((s, f) => s + this.toIls(f.amount, f.currency), 0);
     const keys = []
       .concat((d.invoices || []).map(i => mk(i.expectedPaymentDate)))
       .concat((d.quotes || []).filter(q => q.status === 'approved').map(q => mk(quoteDate(q))))
@@ -1344,7 +1375,7 @@ class Component extends DCLogic {
       const income = (d.invoices || []).filter(i => mk(i.expectedPaymentDate) === k).reduce((s, i) => s + i.amount, 0)
         + (d.quotes || []).filter(q => q.status === 'approved' && mk(quoteDate(q)) === k).reduce((s, q) => s + q.amount, 0);
       const costs = (d.costs || []).filter(c => mk(c.date) === k).reduce((s, c) => s + c.amount, 0);
-      const amount = Math.round(Math.max(0, income - fixedTotal - costs) * 0.25);
+      const amount = Math.round(Math.max(0, income - this.fixedTotalFor(d, k) - costs) * 0.25);
       const already = d.cash.some(c => c.source === 'autoFun' && c.monthKey === k);
       if (amount > 0 && !already) {
         const closed = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0, 12);
@@ -1448,7 +1479,10 @@ class Component extends DCLogic {
     const income = monthInv.reduce((s, i) => s + i.amount, 0) + approvedQuotesMonth.reduce((s, q) => s + q.amount, 0);
     const received = monthInv.filter(i => i.status === 'paid').reduce((s, i) => s + i.amount, 0)
       + paidQuoteDepositsMonth.reduce((s, q) => s + quoteDepositAmount(q), 0);
-    const fixedTotal = d.fixed.reduce((s, f) => s + this.toIls(f.amount, f.currency), 0);
+    const refKey = refM.getFullYear() + '-' + String(refM.getMonth() + 1).padStart(2, '0');
+    const nowKey = this.thisMonthKey();
+    const fixedRunning = d.fixed.filter(f => this.fixedRunning(f, refKey));
+    const fixedTotal = fixedRunning.reduce((s, f) => s + this.toIls(f.amount, f.currency), 0);
     const costsMonth = d.costs.filter(c => inRefMonth(c.date)).reduce((s, c) => s + c.amount, 0);
     const net = income - fixedTotal - costsMonth;
     const distributable = Math.max(0, net);
@@ -1723,7 +1757,7 @@ class Component extends DCLogic {
       netF: this.fmtSigned(net), s50F: this.fmt(distributable * 0.5), s25aF: this.fmt(distributable * 0.25), s25bF: this.fmt(distributable * 0.25),
       hasDed: fixedTotal + costsMonth > 0, dedF: this.fmt(fixedTotal + costsMonth) + '-',
       bdRows: [{ label: 'הכנסה · ' + base.monthLabel, amountF: this.fmt(income), color: '#149361' }]
-        .concat(d.fixed.map(f => ({ label: f.name + (f.currency === 'USD' ? ' ($' + f.amount + ')' : '') + (f.isPersonal ? ' (תשלום חודשי · אישי)' : ' (תשלום חודשי)'), amountF: '-' + this.fmt(this.toIls(f.amount, f.currency)), color: '#D84949' })))
+        .concat(fixedRunning.map(f => ({ label: f.name + (f.currency === 'USD' ? ' ($' + f.amount + ')' : '') + (f.isPersonal ? ' (תשלום חודשי · אישי)' : ' (תשלום חודשי)'), amountF: '-' + this.fmt(this.toIls(f.amount, f.currency)), color: '#D84949' })))
         .concat(d.costs.filter(c => inRefMonth(c.date)).map(c => ({ label: 'עלות פרויקט · ' + c.description, amountF: '-' + this.fmt(c.amount), color: '#D84949' }))),
       bdNetF: this.fmtSigned(net),
       bdSplits: [['חיסכון אישי', '50%', distributable * 0.5, '#007AFF'], ['קופת עסק', '25%', distributable * 0.25, '#98DDF9'], ['בזבוזים', '25%', distributable * 0.25, '#34D6C0']]
@@ -1881,17 +1915,24 @@ class Component extends DCLogic {
         return { label, bg: sel ? '#FFFFFF' : 'transparent', color: sel ? '#111827' : '#626A78',
           shadow: sel ? '0 6px 16px rgba(32,49,70,.10)' : 'none', pick: () => this.setState({ finTab: val }) }; }),
       expToggle: mkToggle([['עסקיות', false], ['אישיות', true]], null, 'expPersonal'),
-      fixedEmpty: d.fixed.length === 0, hasFixed: d.fixed.length > 0, fixedTotalF: this.fmt(fixedTotal) + '-',
-      fixedChips: d.fixed.map(f => ({
+      fixedEmpty: fixedRunning.length === 0, hasFixed: fixedRunning.length > 0, fixedTotalF: this.fmt(fixedTotal) + '-',
+      fixedChips: fixedRunning.map(f => ({
         /* Both business and personal charges are listed here, since both come off
            the month's income before anything is split. */
         label: (f.currency === 'USD'
           ? f.name + ' · $' + f.amount + ' ≈ ' + this.fmt(this.toIls(f.amount, 'USD'))
-          : f.name + ' · ' + this.fmt(f.amount)) + (f.isPersonal ? ' · אישי' : ''),
+          : f.name + ' · ' + this.fmt(f.amount)) + (f.isPersonal ? ' · אישי' : '') + (f.endMonth === refKey ? ' · חודש אחרון' : ''),
         edit: () => this.setState({ modal: 'fixed', fFixId: f.id, fFixName: f.name, fFixAmt: String(f.amount), fFixCur: f.currency || 'ILS',
           fFixReceiptName: f.receiptName || '', fFixReceiptData: f.receiptData || '' }),
-        del: () => this.upd(x => { x.fixed = x.fixed.filter(z => z.id !== f.id); }) })),
-      hasUsd: d.fixed.some(f => f.currency === 'USD'),
+        /* A charge that has already run through earlier months is closed at the
+           current month, so those months keep their figures. One that started
+           this month has no history worth keeping and is simply removed. */
+        del: () => this.upd(x => {
+          const v = x.fixed.find(z => z.id === f.id); if (!v) return;
+          if ((v.startMonth || '2000-01') >= nowKey) x.fixed = x.fixed.filter(z => z.id !== f.id);
+          else v.endMonth = nowKey;
+        }) })),
+      hasUsd: fixedRunning.some(f => f.currency === 'USD'),
       rateNote: 'המרה לפי שער דולר נוכחי: ₪' + (S.usdRate || 3.7).toFixed(2) + ' לדולר, מתעדכן אוטומטית',
       rateTipOpen: S.rateTipOpen,
       toggleRateTip: e => { e.stopPropagation(); this.setState({ rateTipOpen: !S.rateTipOpen }); },
@@ -1909,8 +1950,24 @@ class Component extends DCLogic {
       fixUsdHint: 'המחיר בדולר יומר אוטומטית לשקלים לפי השער הנוכחי (₪' + (S.usdRate || 3.7).toFixed(2) + ')' + (S.fFixAmt ? ' — כרגע ' + this.fmt(this.toIls(parseFloat(S.fFixAmt) || 0, 'USD')) : ''),
       saveFixed: () => { const a = parseFloat(S.fFixAmt); if (!S.fFixName.trim() || !a) return;
         this.upd(x => {
-          if (S.fFixId) { const v = x.fixed.find(z => z.id === S.fFixId); if (v) { v.name = S.fFixName.trim(); v.amount = a; v.currency = S.fFixCur; v.receiptName = S.fFixReceiptName || v.receiptName || null; v.receiptData = S.fFixReceiptData || v.receiptData || null; } }
-          else x.fixed.push({ id: this.uid(), name: S.fFixName.trim(), amount: a, currency: S.fFixCur, isPersonal: S.expPersonal, receiptName: S.fFixReceiptName || null, receiptData: S.fFixReceiptData || null });
+          const now = this.thisMonthKey();
+          if (S.fFixId) {
+            const v = x.fixed.find(z => z.id === S.fFixId); if (!v) return;
+            const priceChanged = v.amount !== a || (v.currency || 'ILS') !== S.fFixCur;
+            const hasHistory = (v.startMonth || '2000-01') < now;
+            v.name = S.fFixName.trim();
+            v.receiptName = S.fFixReceiptName || v.receiptName || null;
+            v.receiptData = S.fFixReceiptData || v.receiptData || null;
+            if (priceChanged && hasHistory) {
+              /* Close the old price at last month and start the new one now, so a
+                 price rise never rewrites what earlier months actually cost. */
+              v.endMonth = this.shiftMonthKey(now, -1);
+              x.fixed.push({ id: this.uid(), name: S.fFixName.trim(), amount: a, currency: S.fFixCur,
+                isPersonal: v.isPersonal, startMonth: now, endMonth: null,
+                receiptName: v.receiptName, receiptData: v.receiptData });
+            } else { v.amount = a; v.currency = S.fFixCur; }
+          }
+          else x.fixed.push({ id: this.uid(), name: S.fFixName.trim(), amount: a, currency: S.fFixCur, isPersonal: S.expPersonal, startMonth: this.thisMonthKey(), endMonth: null, receiptName: S.fFixReceiptName || null, receiptData: S.fFixReceiptData || null });
         });
         this.setState({ modal: null }); },
       showPersonalBudget: S.expPersonal,
