@@ -3662,9 +3662,11 @@ class Component extends DCLogic {
        since stopped. Counted: only the ones still running. */
     const fixedVisible = d.fixed
       .filter(f => (f.startMonth || '2000-01') <= refKey)
+      /* Anything on its way out sinks: still running first, then the ones in their
+         last month, then the ones already stopped. */
       .sort((a, b) => {
-        const live = f => this.fixedRunning(f, refKey) ? 0 : 1;
-        return live(a) - live(b) || (a.billingDay || 99) - (b.billingDay || 99);
+        const rank = f => !this.fixedRunning(f, refKey) ? 2 : f.endMonth === refKey ? 1 : 0;
+        return rank(a) - rank(b) || (a.billingDay || 99) - (b.billingDay || 99);
       });
     const fixedTotal = fixedRunning.reduce((s, f) => s + this.toIls(f.amount, f.currency), 0);
     const nextFixedTotal = this.fixedTotalFor(d, this.shiftMonthKey(refKey, 1));
