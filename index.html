@@ -2885,6 +2885,15 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
     <button onClick="{{ saveDoc }}" style="width:100%;border:1px solid rgba(255,255,255,.85);border-radius:26px;min-height:52px;font-size:16.5px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;background:radial-gradient(75% 100% at 18% 15%,rgba(255,255,255,.72) 0%,rgba(255,255,255,.22) 38%,rgba(255,255,255,0) 70%),radial-gradient(55% 90% at 88% 48%,rgba(255,255,255,.68) 0%,rgba(255,255,255,.12) 46%,rgba(255,255,255,0) 76%),linear-gradient(135deg,#CDEFFC 0%,#87D8FA 22%,#4FC6FA 48%,#45C1F8 62%,#78D2F9 78%,#DFF5FC 100%);color:#fff;box-shadow:0 18px 38px rgba(69,193,248,.20),0 6px 18px rgba(69,193,248,.12);text-shadow:0 1px 3px rgba(21,102,160,.4)">שמור</button>
   </sc-if>
 
+  <sc-if value="{{ mBituach }}" hint-placeholder-val="{{ false }}">
+    <div style="width:56px;height:56px;border-radius:20px;margin:0 auto 14px;background:radial-gradient(85% 120% at 32% 28%,rgba(255,255,255,.65) 0%,rgba(255,255,255,.15) 45%,rgba(255,255,255,0) 70%),linear-gradient(135deg,#54C4FA 0%,#76D1FB 55%,#B7E7FD 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(69,193,248,.26)"><svg width="27" height="27" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5.5c0 4.6-2.8 8.3-7 10.5-4.2-2.2-7-5.9-7-10.5V6z" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"></path><path d="M9 12l2.2 2.2L15.5 10" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+    <div style="font-size:21px;font-weight:600;text-align:center;color:#111827;margin-bottom:6px">שילמת ביטוח לאומי?</div>
+    <div style="font-size:13.5px;color:#9299A5;font-weight:500;text-align:center;margin-bottom:20px;line-height:1.55">{{ bituachSub }}</div>
+    <button onClick="{{ bituachYes }}" style="width:100%;border:1px solid rgba(255,255,255,.85);border-radius:26px;min-height:52px;font-size:16.5px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;background:radial-gradient(75% 100% at 18% 15%,rgba(255,255,255,.72) 0%,rgba(255,255,255,.22) 38%,rgba(255,255,255,0) 70%),radial-gradient(55% 90% at 88% 48%,rgba(255,255,255,.68) 0%,rgba(255,255,255,.12) 46%,rgba(255,255,255,0) 76%),linear-gradient(135deg,#CDEFFC 0%,#87D8FA 22%,#4FC6FA 48%,#45C1F8 62%,#78D2F9 78%,#DFF5FC 100%);color:#fff;box-shadow:0 18px 38px rgba(69,193,248,.20),0 6px 18px rgba(69,193,248,.12);text-shadow:0 1px 3px rgba(21,102,160,.4);margin-bottom:10px">כן, שילמתי</button>
+    <button onClick="{{ bituachNo }}" style="width:100%;border:1px solid rgba(255,255,255,.9);border-radius:26px;min-height:48px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;background:rgba(255,255,255,.72);color:#626A78">עוד לא</button>
+    <div style="font-size:11.5px;color:#AEB4BE;font-weight:500;text-align:center;margin-top:10px;line-height:1.5">אם עוד לא — אשאל שוב בפתיחה הבאה</div>
+  </sc-if>
+
   <sc-if value="{{ mFixed }}" hint-placeholder-val="{{ false }}">
     <div style="font-size:20px;font-weight:600;margin-bottom:16px;text-align:center;color:#111827">{{ fixedTitle }}</div>
     <input value="{{ fFixName }}" onChange="{{ hFixName }}" placeholder="שם הכלי / המנוי (למשל Gemini)" style="width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.6);border-radius:16px;padding:13px 16px;font-size:15.5px;margin-bottom:10px">
@@ -3070,7 +3079,12 @@ class Component extends DCLogic {
     } catch(e) {}
     let fp = null;
     try { fp = JSON.parse(localStorage.getItem('bizflow_fab_pos')); } catch(e) {}
-    this.setState({ data: d, fabPos: fp, finTab: this.state.finTab === 'shop' || this.state.finTab === 'exp' ? 'save' : this.state.finTab });
+    /* From the 14th onward the month is asked about on every open until it is
+       confirmed. Answering "not yet" is deliberately not remembered — that is
+       what brings the question back next time. */
+    const askBituach = new Date().getDate() >= 14 && !this.bituachConfirmed(this.thisMonthKey());
+    this.setState({ data: d, fabPos: fp, modal: askBituach ? 'bituach' : this.state.modal,
+      finTab: this.state.finTab === 'shop' || this.state.finTab === 'exp' ? 'save' : this.state.finTab });
     this._docClick = () => { if (this.state.rateTipOpen) this.setState({ rateTipOpen: false }); };
     document.addEventListener('click', this._docClick);
     try {
@@ -3523,6 +3537,18 @@ class Component extends DCLogic {
   fixedTotalFor(d, key) {
     return (d.fixed || []).filter(f => this.fixedRunning(f, key))
       .reduce((s, f) => s + this.toIls(f.amount, f.currency), 0);
+  }
+  /* Kept out of the mirrored data object on purpose — see the loader. */
+  bituachConfirmed(key) {
+    try { return !!(JSON.parse(localStorage.getItem('bizflow_bituach') || '{}') || {})[key]; }
+    catch(e) { return false; }
+  }
+  confirmBituach(key) {
+    try {
+      const map = JSON.parse(localStorage.getItem('bizflow_bituach') || '{}') || {};
+      map[key] = true;
+      localStorage.setItem('bizflow_bituach', JSON.stringify(map));
+    } catch(e) {}
   }
   thisMonthKey() {
     const n = new Date();
@@ -4171,6 +4197,12 @@ class Component extends DCLogic {
       rateTipOpen: S.rateTipOpen,
       toggleRateTip: e => { e.stopPropagation(); this.setState({ rateTipOpen: !S.rateTipOpen }); },
       openAddFixed: () => this.setState({ modal: 'fixed', fFixId: null, fFixName: '', fFixAmt: '', fFixCur: 'ILS', fFixDate: this.isoDate(new Date()), fFixReceiptName: '', fFixReceiptData: '' }),
+      mBituach: S.modal === 'bituach',
+      bituachSub: new Date().toLocaleDateString('he-IL', { day: 'numeric', month: 'long' }) + ' · התזכורת החודשית שלך',
+      bituachYes: () => { this.confirmBituach(this.thisMonthKey()); this.setState({ modal: null }); },
+      /* Answering "not yet" only closes the sheet. Nothing is written, so the next
+         open asks again — which is the whole point of the reminder. */
+      bituachNo: () => this.setState({ modal: null }),
       mFixed: S.modal === 'fixed',
       fixedTitle: S.fFixId ? 'עריכת מנוי' : 'מנוי חדש',
       fixedEditing: !!S.fFixId,
