@@ -2200,9 +2200,9 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
   </div>
   <div style="background:radial-gradient(110% 75% at 52% 110%,rgba(81,227,238,.18) 0%,rgba(152,221,249,.12) 42%,rgba(255,255,255,0) 72%),linear-gradient(180deg,rgba(255,255,255,.80) 0%,rgba(250,252,253,.73) 40%,rgba(224,243,247,.66) 72%,rgba(199,232,238,.58) 100%);backdrop-filter:blur(28px) saturate(125%);-webkit-backdrop-filter:blur(28px) saturate(125%);border:1px solid rgba(255,255,255,.85);border-radius:32px;padding:24px;box-shadow:0 24px 70px rgba(35,52,74,.10),0 8px 24px rgba(35,52,74,.06),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.40);margin-bottom:16px">
     <div style="font-size:14px;color:#626A78;font-weight:500">הכנסה · {{ monthLabel }}</div>
-    <div style="font-size:40px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:2px 0 14px;color:#111827">{{ incomeF }}</div>
+    <div style="font-size:40px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:2px 0 0;color:#111827">{{ incomeF }}</div>
     <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ true }}">
-    <div style="display:flex;gap:8px">
+    <div style="display:flex;gap:8px;margin-top:14px">
       <span style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.9);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:#C77E0A"><span style="width:7px;height:7px;border-radius:999px;background:#C77E0A"></span>{{ pendingF }}</span>
     </div>
     </sc-if>
@@ -2218,13 +2218,39 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
     <div style="display:flex;height:10px;border-radius:999px;overflow:hidden;gap:3px;margin:12px 0 16px">
       <div style="flex:50;background:linear-gradient(90deg,#007AFF,#54C4FA)"></div>
       <div style="flex:25;background:#98DDF9"></div>
-      <div style="flex:25;background:#D0F3FC"></div>
+      <div style="flex:25;background:#34D6C0"></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px">
       <div style="display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:4px;background:#007AFF"></span><span style="flex:1;font-size:15px;font-weight:500;color:#111827">חיסכון אישי</span><span style="font-size:12px;color:#9299A5;font-weight:600">50%</span><span style="font-size:15px;font-weight:600;min-width:72px;text-align:left;font-variant-numeric:tabular-nums;color:#111827">{{ s50F }}</span></div>
       <div style="display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:4px;background:#98DDF9"></span><span style="flex:1;font-size:15px;font-weight:500;color:#111827">קופת עסק</span><span style="font-size:12px;color:#9299A5;font-weight:600">25%</span><span style="font-size:15px;font-weight:600;min-width:72px;text-align:left;font-variant-numeric:tabular-nums;color:#111827">{{ s25aF }}</span></div>
-      <div style="display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:4px;background:#D0F3FC"></span><span style="flex:1;font-size:15px;font-weight:500;color:#111827">בזבוזים</span><span style="font-size:12px;color:#9299A5;font-weight:600">25%</span><span style="font-size:15px;font-weight:600;min-width:72px;text-align:left;font-variant-numeric:tabular-nums;color:#111827">{{ s25bF }}</span></div>
+      <div style="display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:4px;background:#34D6C0"></span><span style="flex:1;font-size:15px;font-weight:500;color:#111827">בזבוזים</span><span style="font-size:12px;color:#9299A5;font-weight:600">25%</span><span style="font-size:15px;font-weight:600;min-width:72px;text-align:left;font-variant-numeric:tabular-nums;color:#111827">{{ s25bF }}</span></div>
     </div>
+  </div>
+  <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(24px) saturate(125%);-webkit-backdrop-filter:blur(24px) saturate(125%);border:1px solid rgba(255,255,255,.82);border-radius:24px;padding:16px 18px;margin-bottom:9px;box-shadow:0 14px 36px rgba(32,49,70,.09),0 4px 14px rgba(32,49,70,.045),inset 0 1px 0 rgba(255,255,255,.95)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px">
+      <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#9299A5;font-weight:600">חיובים חודשיים קבועים<sc-if value="{{ hasUsd }}" hint-placeholder-val="{{ false }}"><button onClick="{{ toggleRateTip }}" style="width:16px;height:16px;border-radius:999px;border:1px solid #C9CDD5;background:rgba(255,255,255,.75);color:#9299A5;font-size:10.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;font-family:'Assistant',sans-serif;line-height:1;flex:none">?</button></sc-if></span>
+      <button onClick="{{ openAddFixed }}" style="border:none;background:none;color:#007AFF;font-size:13px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;padding:2px 4px">+ חיוב</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <sc-for list="{{ fixedChips }}" as="fx" hint-placeholder-count="1">
+        <span style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.85);border-radius:999px;padding:6px 8px 6px 12px;font-size:13px;font-weight:500;color:#626A78;box-shadow:0 4px 14px rgba(32,49,70,.05)">
+          <span onClick="{{ fx.edit }}" style="cursor:pointer">{{ fx.label }}</span>
+          <button onClick="{{ fx.del }}" style="border:none;background:none;cursor:pointer;padding:0 2px;color:#AEB4BE;font-size:14px;line-height:1">×</button>
+        </span>
+      </sc-for>
+      <sc-if value="{{ fixedEmpty }}" hint-placeholder-val="{{ false }}">
+        <span style="font-size:13px;color:#9299A5;font-weight:500;padding:4px 2px">אין חיובים קבועים</span>
+      </sc-if>
+    </div>
+    <sc-if value="{{ rateTipOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="font-size:12px;color:#626A78;font-weight:500;margin-top:10px;background:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.95);border-radius:14px;padding:8px 14px;box-shadow:0 8px 20px rgba(32,49,70,.08);animation:fadein .15s ease">{{ rateNote }}</div>
+    </sc-if>
+    <sc-if value="{{ hasFixed }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:11px;border-top:1px solid rgba(17,24,39,.06)">
+        <span style="font-size:13.5px;color:#626A78;font-weight:500">יורד כל חודש</span>
+        <span style="font-size:16px;font-weight:600;color:#D84949;font-variant-numeric:tabular-nums">{{ fixedTotalF }}</span>
+      </div>
+    </sc-if>
   </div>
   <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:9px">
     <div onClick="{{ goSavingsBiz }}" style="background:rgba(255,255,255,.62);backdrop-filter:blur(24px) saturate(125%);-webkit-backdrop-filter:blur(24px) saturate(125%);border:1px solid rgba(255,255,255,.82);border-radius:22px;padding:14px 12px;cursor:pointer;box-shadow:0 14px 36px rgba(32,49,70,.09),0 4px 14px rgba(32,49,70,.045),inset 0 1px 0 rgba(255,255,255,.95);min-width:0">
@@ -2236,8 +2262,8 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
       <div style="font-size:19px;font-weight:600;margin-top:3px;color:#7D6BFB;font-variant-numeric:tabular-nums;white-space:nowrap">{{ saveF }}</div>
     </div>
     <div onClick="{{ goSpending }}" style="background:rgba(255,255,255,.62);backdrop-filter:blur(24px) saturate(125%);-webkit-backdrop-filter:blur(24px) saturate(125%);border:1px solid rgba(255,255,255,.82);border-radius:22px;padding:14px 12px;cursor:pointer;box-shadow:0 14px 36px rgba(32,49,70,.09),0 4px 14px rgba(32,49,70,.045),inset 0 1px 0 rgba(255,255,255,.95);min-width:0">
-      <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:999px;background:linear-gradient(135deg,#8EDDF6,#D0F3FC);flex:none"></span><span style="font-size:13.5px;color:#626A78;font-weight:500">בזבוזים</span></div>
-      <div style="font-size:19px;font-weight:600;margin-top:3px;color:#39A9D6;font-variant-numeric:tabular-nums;white-space:nowrap">{{ spendingF }}</div>
+      <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:999px;background:linear-gradient(135deg,#2FD3B8,#A7F3E4);flex:none"></span><span style="font-size:13.5px;color:#626A78;font-weight:500">בזבוזים</span></div>
+      <div style="font-size:19px;font-weight:600;margin-top:3px;color:#12B5A0;font-variant-numeric:tabular-nums;white-space:nowrap">{{ spendingF }}</div>
     </div>
   </div>
   <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,255,255,.56);backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%);border:1px solid rgba(255,255,255,.82);border-radius:19px;padding:11px 15px;margin-bottom:24px;box-shadow:0 10px 28px rgba(32,49,70,.07),inset 0 1px 0 rgba(255,255,255,.94)">
@@ -2444,67 +2470,14 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
     </sc-for>
   </div>
 
-  <sc-if value="{{ finExp }}" hint-placeholder-val="{{ false }}">
-    <div style="display:flex;gap:8px;margin-bottom:14px">
-      <sc-for list="{{ expToggle }}" as="et" hint-placeholder-count="2">
-        <button onClick="{{ et.pick }}" style="border:1px solid rgba(255,255,255,.85);border-radius:999px;padding:8px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;background:{{ et.bg }};color:{{ et.color }}">{{ et.label }}</button>
-      </sc-for>
-    </div>
-    <sc-if value="{{ showPersonalBudget }}" hint-placeholder-val="{{ false }}">
-      <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(24px) saturate(125%);-webkit-backdrop-filter:blur(24px) saturate(125%);border:1px solid rgba(255,255,255,.82);border-radius:24px;padding:17px 20px;margin-bottom:14px;box-shadow:0 14px 36px rgba(32,49,70,.08),inset 0 1px 0 rgba(255,255,255,.95);display:flex;align-items:center;gap:12px">
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13.5px;color:#626A78;font-weight:500">זמין לבזבוזים</div>
-          <div style="font-size:30px;font-weight:600;letter-spacing:-.025em;color:#111827;font-variant-numeric:tabular-nums;margin-top:1px">{{ spendingAvailableF }}</div>
-        </div>
-        <button onClick="{{ openSpendingTransfer }}" title="העברה לחיסכון" style="height:42px;border:1px solid rgba(255,255,255,.9);border-radius:16px;background:rgba(255,255,255,.72);color:#007AFF;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 13px;font-family:'Assistant',sans-serif;font-size:12.5px;font-weight:600;cursor:{{ spendingTransferBtnCursor }};opacity:{{ spendingTransferBtnOpacity }};box-shadow:0 6px 18px rgba(32,49,70,.06)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 8h12M13 4l4 4-4 4M19 16H7M11 12l-4 4 4 4" stroke="#007AFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>העברה</button>
-      </div>
-    </sc-if>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin:0 6px 8px">
-      <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#9299A5;font-weight:600">מנויים והוצאות קבועות · כל חודש<sc-if value="{{ hasUsd }}" hint-placeholder-val="{{ false }}"><button onClick="{{ toggleRateTip }}" style="width:16px;height:16px;border-radius:999px;border:1px solid #C9CDD5;background:rgba(255,255,255,.75);color:#9299A5;font-size:10.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;font-family:'Assistant',sans-serif;line-height:1;flex:none">?</button></sc-if></span>
-      <button onClick="{{ openAddFixed }}" style="border:none;background:none;color:#007AFF;font-size:13px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;padding:2px 4px">+ מנוי</button>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-      <sc-for list="{{ fixedChips }}" as="fx" hint-placeholder-count="1">
-        <span style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.85);border-radius:999px;padding:6px 8px 6px 12px;font-size:13px;font-weight:500;color:#626A78;box-shadow:0 4px 14px rgba(32,49,70,.05)">
-          <span onClick="{{ fx.edit }}" style="cursor:pointer">{{ fx.label }}</span>
-          <button onClick="{{ fx.del }}" style="border:none;background:none;cursor:pointer;padding:0 2px;color:#AEB4BE;font-size:14px;line-height:1">×</button>
-        </span>
-      </sc-for>
-    </div>
-    <sc-if value="{{ rateTipOpen }}" hint-placeholder-val="{{ false }}">
-      <div style="font-size:12px;color:#626A78;font-weight:500;margin:0 6px 12px;background:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.95);border-radius:14px;padding:8px 14px;box-shadow:0 8px 20px rgba(32,49,70,.08);animation:fadein .15s ease">{{ rateNote }}</div>
-    </sc-if>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 6px 12px">
-      <span style="font-size:14px;color:#626A78;font-weight:500">החודש</span>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;color:#111827">{{ expMonthF }}</span>
-        <button onClick="{{ openAddExpense }}" class="glass-plus" title="הוספת הוצאה" style="width:42px;height:36px;border:1.5px solid rgba(255,255,255,.95);border-radius:999px;background:radial-gradient(85% 120% at 32% 28%,rgba(255,255,255,.65) 0%,rgba(255,255,255,.15) 45%,rgba(255,255,255,0) 70%),radial-gradient(140% 150% at 50% 55%,#54C4FA 0%,#76D1FB 48%,#B7E7FD 82%,#E2F6FE 100%);cursor:pointer;box-shadow:inset 0 1px 4px rgba(255,255,255,.9),0 8px 20px rgba(69,193,248,.24);display:flex;align-items:center;justify-content:center;padding:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2" stroke-linecap="round"></path></svg></button>
-      </div>
-    </div>
-    <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(28px) saturate(125%);-webkit-backdrop-filter:blur(28px) saturate(125%);border:1px solid rgba(255,255,255,.82);border-radius:28px;overflow:hidden;box-shadow:0 14px 36px rgba(32,49,70,.09),0 4px 14px rgba(32,49,70,.045),inset 0 1px 0 rgba(255,255,255,.95)">
-      <sc-for list="{{ expList }}" as="e" hint-placeholder-count="2">
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(17,24,39,.05)">
-          <div style="flex:1;min-width:0">
-            <div style="font-size:15px;font-weight:600;color:#111827">{{ e.desc }}</div>
-            <div style="font-size:12.5px;color:#9299A5">{{ e.catLabel }} · {{ e.dateLabel }}</div>
-          </div>
-          <span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;color:#111827">{{ e.amountF }}</span>
-          <button onClick="{{ e.edit }}" title="עריכת הוצאה" style="border:none;background:none;cursor:pointer;padding:2px;color:#9299A5;display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 20l4.2-1 10-10a2.1 2.1 0 00-3-3l-10 10L4 20z" stroke="#9299A5" stroke-width="1.7" stroke-linejoin="round"></path></svg></button>
-          <button onClick="{{ e.del }}" style="border:none;background:none;cursor:pointer;padding:2px;color:#AEB4BE;font-size:17px;line-height:1">×</button>
-        </div>
-      </sc-for>
-      <sc-if value="{{ expEmpty }}" hint-placeholder-val="{{ false }}">
-        <div style="padding:26px;text-align:center;font-size:14px;color:#9299A5;font-weight:500">אין הוצאות</div>
-      </sc-if>
-    </div>
-  </sc-if>
-
   <sc-if value="{{ finSave }}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{ showSaveToggle }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;gap:8px;margin-bottom:16px">
       <sc-for list="{{ saveToggle }}" as="st" hint-placeholder-count="2">
         <button onClick="{{ st.pick }}" style="border:1px solid rgba(255,255,255,.85);border-radius:999px;padding:8px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;background:{{ st.bg }};color:{{ st.color }}">{{ st.label }}</button>
       </sc-for>
     </div>
+    </sc-if>
     <div style="background:{{ balCardBg }};backdrop-filter:blur(28px) saturate(125%);-webkit-backdrop-filter:blur(28px) saturate(125%);border:1px solid rgba(255,255,255,.85);border-radius:32px;padding:28px 22px;text-align:center;box-shadow:0 24px 70px rgba(35,52,74,.10),0 8px 24px rgba(35,52,74,.06),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.40);margin-bottom:16px">
       <div style="font-size:14px;color:#626A78;font-weight:500">יתרה · {{ balTitle }}</div>
       <div style="font-size:42px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:2px 0 18px;color:#111827">{{ balF }}</div>
@@ -2524,6 +2497,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
               <div style="font-size:12.5px;color:#9299A5">{{ ce.dateLabel }} · {{ ce.timeLabel }}<sc-if value="{{ ce.hasReceipt }}" hint-placeholder-val="{{ false }}"> · קבלה</sc-if></div>
             </div>
             <span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;color:{{ ce.color }}">{{ ce.amountF }}</span>
+            <sc-if value="{{ ce.canAttach }}" hint-placeholder-val="{{ false }}"><label title="{{ ce.receiptTitle }}" style="cursor:pointer;padding:2px;display:flex;align-items:center;justify-content:center;flex:none"><input type="file" style="display:none" onChange="{{ ce.attach }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6" stroke="{{ ce.receiptColor }}" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"></path></svg></label></sc-if>
             <sc-if value="{{ ce.canEdit }}" hint-placeholder-val="{{ false }}"><button onClick="{{ ce.edit }}" title="עריכת העברה" style="border:none;background:none;cursor:pointer;padding:2px;color:#9299A5;display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 20l4.2-1 10-10a2.1 2.1 0 00-3-3l-10 10L4 20z" stroke="#9299A5" stroke-width="1.7" stroke-linejoin="round"></path></svg></button></sc-if>
             <button onClick="{{ ce.del }}" style="border:none;background:none;cursor:pointer;padding:2px;color:#AEB4BE;font-size:17px;line-height:1">×</button>
           </div>
@@ -2533,6 +2507,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
         <div style="padding:26px;text-align:center;font-size:14px;color:#9299A5;font-weight:500">אין תנועות</div>
       </sc-if>
     </div>
+    <sc-if value="{{ showGoals }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;align-items:center;justify-content:space-between;margin:22px 6px 10px">
       <span style="font-size:17px;font-weight:600;color:#111827">יעדים</span>
       <span style="font-size:12.5px;color:#9299A5;font-weight:500">{{ goalHint }}</span>
@@ -2552,6 +2527,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
       </sc-for>
       <sc-if value="{{ goalsEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:22px;text-align:center;color:#9299A5;font-size:13px">אין יעדים</div></sc-if>
     </div>
+    </sc-if>
   </sc-if>
 
   <sc-if value="{{ finShop }}" hint-placeholder-val="{{ false }}">
@@ -2956,7 +2932,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;500px&quot;,&quot;height&quot;:&quot;960px&quot;},&quot;showAiButton&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;התנהגות&quot;},&quot;confettiOn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;התנהגות&quot;}}">
 class Component extends DCLogic {
   state = {
-    screen: 'home', clientId: null, finTab: 'exp', expPersonal: false, savePersonal: false,
+    screen: 'home', clientId: null, finTab: 'save', expPersonal: false, savePersonal: false,
     modal: null, docType: 'invoice', expandedInv: null, confetti: false, clientProfitPeriod: 'year', clientSection: 'invoices',
     aiOpen: false, aiMsgs: [], aiTyping: false, aiAsk: false, fAiText: '', fabPos: null, payHover: null, fFileName: '', fFileData: '',
     fName: '', fClientType: 'company', fPayType: 'net60', fAmount: '', fDesc: '', fDate: new Date().toISOString().slice(0,10),
@@ -3030,7 +3006,7 @@ class Component extends DCLogic {
     });
     d.shopping = (d.shopping || []).map(s => ({ ...s, isPersonal: !!s.isPersonal }));
     d.expenses = (d.expenses || []).map(e => ({ ...e, receiptName: e.receiptName || e.importFile || null, receiptData: e.receiptData || e.importData || null }));
-    d.cash = (d.cash || []).map(c => ({ ...c, receiptName: c.receiptName || null, receiptData: c.receiptData || null, createdAt: c.createdAt || (c.date ? c.date + 'T12:00:00' : new Date().toISOString()) }));
+    d.cash = (d.cash || []).map(c => ({ ...c, pot: c.pot || (c.isBusiness ? 'biz' : 'personal'), receiptName: c.receiptName || null, receiptData: c.receiptData || null, createdAt: c.createdAt || (c.date ? c.date + 'T12:00:00' : new Date().toISOString()) }));
     d.expenses.filter(e => !e.isPersonal).forEach(e => {
       if (!d.cash.some(c => c.source === 'expense' && c.expenseId === e.id)) {
         d.cash.push({ id: 'expense-cash-' + e.id, type: 'withdrawal', amount: e.amount, description: 'הוצאה · ' + e.description,
@@ -3039,6 +3015,7 @@ class Component extends DCLogic {
     });
     d.fixed = (d.fixed || []).map(f => ({ ...f, currency: f.currency || 'ILS', receiptName: f.receiptName || null, receiptData: f.receiptData || null }));
     d.costs = (d.costs || []).map(c => ({ ...c, receiptName: c.receiptName || null, receiptData: c.receiptData || null }));
+    this.syncAutoAllocations(d);
     d.inspiration = (d.inspiration || []).map(v => ({ ...v, rating: Math.min(5, Math.max(1, Number(v.rating) || 3)),
       done: !!v.done, createdAt: v.createdAt || new Date().toISOString() }));
     try {
@@ -3049,7 +3026,7 @@ class Component extends DCLogic {
     } catch(e) {}
     let fp = null;
     try { fp = JSON.parse(localStorage.getItem('bizflow_fab_pos')); } catch(e) {}
-    this.setState({ data: d, fabPos: fp, finTab: this.state.finTab === 'shop' ? 'save' : this.state.finTab });
+    this.setState({ data: d, fabPos: fp, finTab: this.state.finTab === 'shop' || this.state.finTab === 'exp' ? 'save' : this.state.finTab });
     this._docClick = () => { if (this.state.rateTipOpen) this.setState({ rateTipOpen: false }); };
     document.addEventListener('click', this._docClick);
     try {
@@ -3209,7 +3186,7 @@ class Component extends DCLogic {
       'הוצאה עסקית', e.date, e.amount, e.receiptName || e.importFile, e.receiptData || e.importData, { source: 'expense', id: e.id })));
     d.costs.filter(c => isYear(c.date)).forEach(c => expenses.push(row('עלות פרויקט', c.id, c.description,
       clientName(c.clientId), c.date, c.amount, c.receiptName, c.receiptData, { source: 'cost', id: c.id })));
-    d.cash.filter(c => c.isBusiness && c.type === 'withdrawal' && c.source !== 'expense' && isYear(c.date)).forEach(c => expenses.push(row('משיכת עסק', c.id,
+    d.cash.filter(c => (c.pot || (c.isBusiness ? 'biz' : 'personal')) === 'biz' && c.type === 'withdrawal' && isYear(c.date)).forEach(c => expenses.push(row('משיכת עסק', c.id,
       c.description, 'קופת העסק', c.date, c.amount, c.receiptName, c.receiptData, { source: 'cash', id: c.id })));
     d.fixed.filter(f => !f.isPersonal).forEach(f => expenses.push(row('הוצאה חודשית', f.id, f.name,
       'חודשי × 12', String(year) + '-12-31', this.toIls(f.amount, f.currency) * 12, f.receiptName, f.receiptData, { source: 'fixed', id: f.id })));
@@ -3480,6 +3457,41 @@ class Component extends DCLogic {
     if (!reply) reply = this.aiReply(t) + ' סיימת עם כל מה שרצית, או שאוכל לעזור בעוד משהו?';
     this.setState({ aiMsgs: [...this.state.aiMsgs, { role: 'ai', text: reply }], aiTyping: false, aiAsk: true });
   }
+  /* At the turn of each month a quarter of what was left after deductions moves
+     into בזבוזים on its own, recorded as a plain deposit so it reads like any
+     other movement. The running month is skipped — it is not closed yet — and
+     each month is written at most once. */
+  syncAutoAllocations(d) {
+    if (!d || !Array.isArray(d.cash)) return;
+    const mk = iso => String(iso || '').slice(0, 7);
+    const quoteDate = q => String(q.approvedAt || q.date || '').slice(0, 10);
+    const fixedTotal = (d.fixed || []).reduce((s, f) => s + this.toIls(f.amount, f.currency), 0);
+    const keys = []
+      .concat((d.invoices || []).map(i => mk(i.expectedPaymentDate)))
+      .concat((d.quotes || []).filter(q => q.status === 'approved').map(q => mk(quoteDate(q))))
+      .concat((d.costs || []).map(c => mk(c.date)))
+      .filter(k => /^\d{4}-\d{2}$/.test(k)).sort();
+    if (!keys.length) return;
+    const now = new Date();
+    const currentKey = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    const cursor = new Date(keys[0] + '-01T12:00:00');
+    for (let guard = 0; guard < 600; guard++) {
+      const k = cursor.getFullYear() + '-' + String(cursor.getMonth() + 1).padStart(2, '0');
+      if (k >= currentKey) break;
+      const income = (d.invoices || []).filter(i => mk(i.expectedPaymentDate) === k).reduce((s, i) => s + i.amount, 0)
+        + (d.quotes || []).filter(q => q.status === 'approved' && mk(quoteDate(q)) === k).reduce((s, q) => s + q.amount, 0);
+      const costs = (d.costs || []).filter(c => mk(c.date) === k).reduce((s, c) => s + c.amount, 0);
+      const amount = Math.round(Math.max(0, income - fixedTotal - costs) * 0.25);
+      const already = d.cash.some(c => c.source === 'autoFun' && c.monthKey === k);
+      if (amount > 0 && !already) {
+        const closed = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0, 12);
+        d.cash.push({ id: this.uid(), type: 'deposit', amount, description: 'העברה אוטומטית חודשית',
+          date: this.isoDate(closed), createdAt: closed.toISOString(), pot: 'fun', isBusiness: false,
+          source: 'autoFun', monthKey: k, receiptName: null, receiptData: null });
+      }
+      cursor.setMonth(cursor.getMonth() + 1);
+    }
+  }
   fireConfetti() {
     this.confettiPieces = Array.from({ length: 22 }, () => ({
       left: (4 + Math.random() * 92).toFixed(1) + '%',
@@ -3533,7 +3545,7 @@ class Component extends DCLogic {
       goHome: go('home'), goClients: go('clients'), goFinance: go('finance'), goInspo: go('inspo'), goAcct: go('acct'),
       goSavingsBiz: () => this.setState({ screen: 'finance', finTab: 'save', savePersonal: false }),
       goSavingsPersonal: () => this.setState({ screen: 'finance', finTab: 'save', savePersonal: true }),
-      goSpending: () => this.setState({ screen: 'finance', finTab: 'exp', expPersonal: true }),
+      goSpending: () => this.setState({ screen: 'finance', finTab: 'fun' }),
       tHome: S.screen === 'home' ? '#007AFF' : '#9299A5',
       tClients: (S.screen === 'clients' || S.screen === 'client') ? '#007AFF' : '#9299A5',
       tFinance: S.screen === 'finance' ? '#007AFF' : '#9299A5',
@@ -3577,8 +3589,11 @@ class Component extends DCLogic {
     const costsMonth = d.costs.filter(c => inRefMonth(c.date)).reduce((s, c) => s + c.amount, 0);
     const net = income - fixedTotal - costsMonth;
     const distributable = Math.max(0, net);
-    const bizBal = d.cash.filter(c => c.isBusiness).reduce((s, c) => s + (c.type === 'deposit' ? c.amount : -c.amount), 0);
-    const saveBal = d.cash.filter(c => !c.isBusiness).reduce((s, c) => s + (c.type === 'deposit' ? c.amount : -c.amount), 0);
+    const potOf = c => c.pot || (c.isBusiness ? 'biz' : 'personal');
+    const potBalance = name => d.cash.filter(c => potOf(c) === name)
+      .reduce((s, c) => s + (c.type === 'deposit' ? c.amount : -c.amount), 0);
+    const bizBal = potBalance('biz'), saveBal = potBalance('personal'), funBal = potBalance('fun');
+    const pot = S.finTab === 'fun' ? 'fun' : (S.savePersonal ? 'personal' : 'biz');
     const upcPend = d.invoices.filter(i => i.status === 'pending' && i.expectedPaymentDate)
       .sort((a, b) => a.expectedPaymentDate.localeCompare(b.expectedPaymentDate));
     const upcGroups = [];
@@ -3746,7 +3761,7 @@ class Component extends DCLogic {
     const expMonth = expFiltered.filter(e => this.sameMonth(e.date)).reduce((s, e) => s + e.amount, 0)
       + d.fixed.filter(f => f.isPersonal === S.expPersonal).reduce((s, f) => s + this.toIls(f.amount, f.currency), 0);
     const pill = (sel) => sel ? ['#0B0D10', '#FFFFFF'] : ['rgba(255,255,255,.72)', '#626A78'];
-    const cashFiltered = d.cash.filter(c => c.isBusiness === !S.savePersonal)
+    const cashFiltered = d.cash.filter(c => potOf(c) === pot)
       .sort((a, b) => String(b.createdAt || b.date).localeCompare(String(a.createdAt || a.date)));
     const cashGroups = [];
     cashFiltered.forEach(c => {
@@ -3755,8 +3770,15 @@ class Component extends DCLogic {
       let group = cashGroups.find(g => g.label === label);
       if (!group) { group = { label, items: [] }; cashGroups.push(group); }
       group.items.push({ desc: c.description, dateLabel: this.fmtDate(c.date), timeLabel: dt.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }), hasReceipt: !!c.receiptName,
-        amountF: (c.type === 'deposit' ? '+' : '-') + this.fmt(c.amount), color: c.type === 'deposit' ? (S.savePersonal ? '#7D6BFB' : '#149361') : '#D84949',
-        canEdit: true,
+        amountF: (c.type === 'deposit' ? '+' : '-') + this.fmt(c.amount),
+        color: c.type === 'deposit' ? (pot === 'personal' ? '#7D6BFB' : pot === 'fun' ? '#12B5A0' : '#149361') : '#D84949',
+        canEdit: c.source !== 'autoFun',
+        canAttach: c.type === 'withdrawal',
+        receiptColor: c.receiptName ? '#0E86D4' : '#AEB4BE',
+        receiptTitle: c.receiptName || 'צירוף קבלה',
+        attach: async e => { const f = e.target.files && e.target.files[0]; if (!f) return;
+          let data = ''; try { data = await this.readFileData(f); } catch(err) {}
+          this.upd(x => { const v = x.cash.find(z => z.id === c.id); if (v) { v.receiptName = f.name; v.receiptData = data; } }); },
         edit: () => {
           if (c.source === 'spending') {
             this.setState({ modal: 'spendingTransfer', fTransferId: c.id, fTransferAmount: String(c.amount),
@@ -3777,7 +3799,7 @@ class Component extends DCLogic {
         }) });
     });
     const goalSource = d.shopping.filter(s => !!s.isPersonal === S.savePersonal);
-    const selectedBalance = S.savePersonal ? saveBal : bizBal;
+    const selectedBalance = pot === 'personal' ? saveBal : pot === 'fun' ? funBal : bizBal;
     const goalList = goalSource.map(g => {
       const progressNum = g.price > 0 ? Math.min(100, Math.round(selectedBalance / g.price * 100)) : 0;
       const ready = g.price > 0 && selectedBalance >= g.price;
@@ -3786,33 +3808,10 @@ class Component extends DCLogic {
         barBg: S.savePersonal ? 'linear-gradient(90deg,#8775FC,#CEC4FF)' : 'linear-gradient(90deg,#007AFF,#54C4FA)',
         del: () => this.upd(x => { x.shopping = x.shopping.filter(z => z.id !== g.id); }) };
     });
-    const currentMonthKey = this.monthKey(new Date().toISOString().slice(0,10));
-    const allKeys = []
-      .concat(d.invoices.map(i => this.monthKey(i.expectedPaymentDate)))
-      .concat(d.quotes.filter(q => q.status === 'approved').map(q => this.monthKey(quoteApprovedDate(q))))
-      .concat(d.expenses.map(e => this.monthKey(e.date)))
-      .concat(d.costs.map(c => this.monthKey(c.date)))
-      .filter(Boolean).sort();
-    const firstKey = allKeys[0] || currentMonthKey;
-    const cursor = new Date(firstKey + '-01T12:00:00');
-    const currentCursor = new Date(currentMonthKey + '-01T12:00:00');
-    let spendingAvailable = 0;
-    while (cursor <= currentCursor) {
-      const key = cursor.getFullYear() + '-' + String(cursor.getMonth() + 1).padStart(2, '0');
-      const monthIncome = d.invoices.filter(i => this.monthKey(i.expectedPaymentDate) === key).reduce((s, i) => s + i.amount, 0)
-        + d.quotes.filter(q => q.status === 'approved' && this.monthKey(quoteApprovedDate(q)) === key).reduce((s, q) => s + q.amount, 0);
-      const monthCosts = d.costs.filter(c => this.monthKey(c.date) === key).reduce((s, c) => s + c.amount, 0);
-      const allocation = Math.max(0, monthIncome - fixedTotal - monthCosts) * .25;
-      const personalSpent = d.expenses.filter(e => e.isPersonal && !e.pendingAmount && this.monthKey(e.date) === key).reduce((s, e) => s + e.amount, 0);
-      spendingAvailable += allocation - personalSpent;
-      cursor.setMonth(cursor.getMonth() + 1);
-    }
-    spendingAvailable = Math.max(0, spendingAvailable);
-    const spendingTransferred = d.cash.filter(c => c.source === 'spending' && c.type === 'deposit')
-      .reduce((s, c) => s + c.amount, 0);
-    spendingAvailable = Math.max(0, spendingAvailable - spendingTransferred);
-    const editingTransfer = d.cash.find(c => c.id === S.fTransferId && c.source === 'spending');
-    const spendingTransferLimit = spendingAvailable + (editingTransfer ? editingTransfer.amount : 0);
+    /* בזבוזים used to be a forecast minus recorded spending. It is a pot with a
+       real balance now, so the figure is simply what is in it. */
+    const spendingAvailable = funBal;
+    const spendingTransferLimit = funBal;
     const yearAgo = new Date(); yearAgo.setFullYear(yearAgo.getFullYear() - 1);
     const yearShop = d.expenses.filter(e => !e.isPersonal && new Date(e.date) >= yearAgo).reduce((s, e) => s + e.amount, 0);
 
@@ -3864,7 +3863,7 @@ class Component extends DCLogic {
         .concat(d.fixed.map(f => ({ label: f.name + (f.currency === 'USD' ? ' ($' + f.amount + ')' : '') + (f.isPersonal ? ' (תשלום חודשי · אישי)' : ' (תשלום חודשי)'), amountF: '-' + this.fmt(this.toIls(f.amount, f.currency)), color: '#D84949' })))
         .concat(d.costs.filter(c => inRefMonth(c.date)).map(c => ({ label: 'עלות פרויקט · ' + c.description, amountF: '-' + this.fmt(c.amount), color: '#D84949' }))),
       bdNetF: this.fmtSigned(net),
-      bdSplits: [['חיסכון אישי', '50%', distributable * 0.5, '#007AFF'], ['קופת עסק', '25%', distributable * 0.25, '#98DDF9'], ['בזבוזים', '25%', distributable * 0.25, '#D0F3FC']]
+      bdSplits: [['חיסכון אישי', '50%', distributable * 0.5, '#007AFF'], ['קופת עסק', '25%', distributable * 0.25, '#98DDF9'], ['בזבוזים', '25%', distributable * 0.25, '#34D6C0']]
         .map(([label, pct, v, dot]) => ({ label, pct, amountF: this.fmt(v), dot })),
       bizF: this.fmt(bizBal), saveF: this.fmt(saveBal), spendingF: this.fmt(spendingAvailable),
       potsTotalF: this.fmtSigned(bizBal + saveBal + spendingAvailable),
@@ -4012,20 +4011,24 @@ class Component extends DCLogic {
             expectedPaymentDate: S.docType === 'receipt' ? S.fDate : this.calcExpected(S.fDate, cl.paymentType, S.fHalf) }));
         });
         this.setState({ modal: null, clientSection: S.docType === 'quote' ? 'quotes' : 'invoices' }); },
-      finExp: S.finTab === 'exp', finSave: S.finTab === 'save' || S.finTab === 'shop', finShop: false,
-      finTabs: [['הוצאות','exp'],['חסכונות','save']].map(([label, val]) => {
+      finSave: S.finTab === 'save' || S.finTab === 'fun', finShop: false,
+      showSaveToggle: S.finTab !== 'fun', showGoals: S.finTab !== 'fun',
+      finTabs: [['חסכונות','save'],['בזבוזים','fun']].map(([label, val]) => {
         const sel = S.finTab === val;
         return { label, bg: sel ? '#FFFFFF' : 'transparent', color: sel ? '#111827' : '#626A78',
           shadow: sel ? '0 6px 16px rgba(32,49,70,.10)' : 'none', pick: () => this.setState({ finTab: val }) }; }),
       expToggle: mkToggle([['עסקיות', false], ['אישיות', true]], null, 'expPersonal'),
-      fixedChips: d.fixed.filter(f => f.isPersonal === S.expPersonal).map(f => ({
-        label: f.currency === 'USD'
+      fixedEmpty: d.fixed.length === 0, hasFixed: d.fixed.length > 0, fixedTotalF: this.fmt(fixedTotal) + '-',
+      fixedChips: d.fixed.map(f => ({
+        /* Both business and personal charges are listed here, since both come off
+           the month's income before anything is split. */
+        label: (f.currency === 'USD'
           ? f.name + ' · $' + f.amount + ' ≈ ' + this.fmt(this.toIls(f.amount, 'USD'))
-          : f.name + ' · ' + this.fmt(f.amount),
+          : f.name + ' · ' + this.fmt(f.amount)) + (f.isPersonal ? ' · אישי' : ''),
         edit: () => this.setState({ modal: 'fixed', fFixId: f.id, fFixName: f.name, fFixAmt: String(f.amount), fFixCur: f.currency || 'ILS',
           fFixReceiptName: f.receiptName || '', fFixReceiptData: f.receiptData || '' }),
         del: () => this.upd(x => { x.fixed = x.fixed.filter(z => z.id !== f.id); }) })),
-      hasUsd: d.fixed.some(f => f.currency === 'USD' && f.isPersonal === S.expPersonal),
+      hasUsd: d.fixed.some(f => f.currency === 'USD'),
       rateNote: 'המרה לפי שער דולר נוכחי: ₪' + (S.usdRate || 3.7).toFixed(2) + ' לדולר, מתעדכן אוטומטית',
       rateTipOpen: S.rateTipOpen,
       toggleRateTip: e => { e.stopPropagation(); this.setState({ rateTipOpen: !S.rateTipOpen }); },
@@ -4144,28 +4147,38 @@ class Component extends DCLogic {
           bg: sel ? (val ? 'linear-gradient(135deg,#8775FC 0%,#9D8EFD 60%,#B8AAFE 100%)' : 'linear-gradient(135deg,#5F8FFB 0%,#54C4FA 60%,#76D1FB 100%)') : 'rgba(255,255,255,.72)',
           color: sel ? '#FFFFFF' : '#626A78', pick: () => this.setState({ savePersonal: val }) };
       }),
-      balF: this.fmt(S.savePersonal ? saveBal : bizBal),
-      balTitle: S.savePersonal ? 'חיסכון אישי' : 'קופת עסק',
-      balCardBg: S.savePersonal
+      balF: this.fmt(pot === 'personal' ? saveBal : pot === 'fun' ? funBal : bizBal),
+      balTitle: pot === 'personal' ? 'חיסכון אישי' : pot === 'fun' ? 'בזבוזים' : 'קופת עסק',
+      balCardBg: pot === 'fun'
+        ? 'radial-gradient(110% 75% at 52% 110%,rgba(47,211,184,.18) 0%,rgba(167,243,228,.13) 42%,rgba(255,255,255,0) 72%),linear-gradient(180deg,rgba(255,255,255,.80) 0%,rgba(250,253,252,.73) 40%,rgba(224,248,242,.66) 72%,rgba(198,240,229,.58) 100%)'
+        : S.savePersonal
         ? 'radial-gradient(110% 75% at 52% 110%,rgba(125,107,251,.16) 0%,rgba(206,196,255,.12) 42%,rgba(255,255,255,0) 72%),linear-gradient(180deg,rgba(255,255,255,.80) 0%,rgba(250,252,253,.73) 40%,rgba(238,235,250,.66) 72%,rgba(217,210,247,.58) 100%)'
         : 'radial-gradient(110% 75% at 52% 110%,rgba(81,227,238,.18) 0%,rgba(152,221,249,.12) 42%,rgba(255,255,255,0) 72%),linear-gradient(180deg,rgba(255,255,255,.80) 0%,rgba(250,252,253,.73) 40%,rgba(224,243,247,.66) 72%,rgba(199,232,238,.58) 100%)',
-      depBtnBg: S.savePersonal
+      depBtnBg: pot === 'fun'
+        ? 'radial-gradient(85% 120% at 32% 28%,rgba(255,255,255,.62) 0%,rgba(255,255,255,.14) 45%,rgba(255,255,255,0) 70%),radial-gradient(140% 150% at 50% 55%,#2FD3B8 0%,#54DCC6 48%,#A7F3E4 82%,#DFFAF4 100%)'
+        : S.savePersonal
         ? 'radial-gradient(85% 120% at 32% 28%,rgba(255,255,255,.6) 0%,rgba(255,255,255,.12) 45%,rgba(255,255,255,0) 70%),radial-gradient(140% 150% at 50% 55%,#8775FC 0%,#9D8EFD 48%,#CEC4FF 82%,#EBE7FF 100%)'
         : 'radial-gradient(85% 120% at 32% 28%,rgba(255,255,255,.65) 0%,rgba(255,255,255,.15) 45%,rgba(255,255,255,0) 70%),radial-gradient(140% 150% at 50% 55%,#54C4FA 0%,#76D1FB 48%,#B7E7FD 82%,#E2F6FE 100%)',
-      depBtnShadow: S.savePersonal
+      depBtnShadow: pot === 'fun'
+        ? 'inset 0 1px 4px rgba(255,255,255,.9),inset 0 -2px 6px rgba(255,255,255,.5),0 10px 24px rgba(47,211,184,.28)'
+        : S.savePersonal
         ? 'inset 0 1px 4px rgba(255,255,255,.9),inset 0 -2px 6px rgba(255,255,255,.5),0 10px 24px rgba(125,107,251,.28)'
         : 'inset 0 1px 4px rgba(255,255,255,.9),inset 0 -2px 6px rgba(255,255,255,.5),0 10px 24px rgba(69,193,248,.28)',
-      cashActionBg: S.savePersonal && S.modal === 'deposit'
+      cashActionBg: pot === 'fun' && S.modal === 'deposit'
+        ? 'radial-gradient(75% 100% at 18% 15%,rgba(255,255,255,.65) 0%,rgba(255,255,255,.18) 40%,rgba(255,255,255,0) 72%),linear-gradient(135deg,#2FD3B8 0%,#54DCC6 55%,#A7F3E4 100%)'
+        : S.savePersonal && S.modal === 'deposit'
         ? 'radial-gradient(75% 100% at 18% 15%,rgba(255,255,255,.65) 0%,rgba(255,255,255,.18) 40%,rgba(255,255,255,0) 72%),linear-gradient(135deg,#8775FC 0%,#9D8EFD 55%,#CEC4FF 100%)'
         : 'radial-gradient(75% 100% at 18% 15%,rgba(255,255,255,.72) 0%,rgba(255,255,255,.22) 38%,rgba(255,255,255,0) 70%),radial-gradient(55% 90% at 88% 48%,rgba(255,255,255,.68) 0%,rgba(255,255,255,.12) 46%,rgba(255,255,255,0) 76%),linear-gradient(135deg,#CDEFFC 0%,#87D8FA 22%,#4FC6FA 48%,#45C1F8 62%,#78D2F9 78%,#DFF5FC 100%)',
-      cashActionShadow: S.savePersonal && S.modal === 'deposit'
+      cashActionShadow: pot === 'fun' && S.modal === 'deposit'
+        ? '0 18px 38px rgba(47,211,184,.22),0 6px 18px rgba(47,211,184,.14)'
+        : S.savePersonal && S.modal === 'deposit'
         ? '0 18px 38px rgba(125,107,251,.22),0 6px 18px rgba(125,107,251,.14)'
         : '0 18px 38px rgba(69,193,248,.20),0 6px 18px rgba(69,193,248,.12)',
       openDeposit: () => this.setState({ modal: 'deposit', fCashId: null, fAmount: '', fDesc: '', fCashReceiptName: '', fCashReceiptData: '' }),
       openWithdraw: () => this.setState({ modal: 'withdraw', fCashId: null, fAmount: '', fDesc: '', fCashReceiptName: '', fCashReceiptData: '' }),
       cashTitle: (S.fCashId ? 'עריכת ' : '') + (S.modal === 'withdraw' ? 'משיכה' : 'הפקדה'),
       cashSaveLabel: S.fCashId ? 'שמירה' : (S.modal === 'withdraw' ? 'משיכה' : 'הפקדה'),
-      showCashReceipt: S.modal === 'withdraw' && !S.savePersonal,
+      showCashReceipt: S.modal === 'withdraw',
       hCashReceipt: async e => { const f = e.target.files && e.target.files[0]; if (f) { let data = ''; try { data = await this.readFileData(f); } catch(err) {} this.setState({ fCashReceiptName: f.name, fCashReceiptData: data }); } },
       cashReceiptLabel: S.fCashReceiptName || 'צירוף קבלה',
       saveCash: () => { const a = parseFloat(S.fAmount); if (!a) return;
@@ -4176,13 +4189,14 @@ class Component extends DCLogic {
           if (existing) {
             existing.amount = a;
             existing.description = S.fDesc.trim() || (isDep ? 'הפקדה' : 'משיכה');
-            existing.receiptName = !isDep && !S.savePersonal ? S.fCashReceiptName || null : null;
-            existing.receiptData = !isDep && !S.savePersonal ? S.fCashReceiptData || null : null;
+            existing.receiptName = !isDep ? S.fCashReceiptName || existing.receiptName || null : null;
+            existing.receiptData = !isDep ? S.fCashReceiptData || existing.receiptData || null : null;
           } else {
             x.cash.push({ id: this.uid(), type: isDep ? 'deposit' : 'withdrawal', amount: a,
-              description: S.fDesc.trim() || (isDep ? 'הפקדה' : 'משיכה'), date: this.isoDate(now), createdAt: now.toISOString(), isBusiness: !S.savePersonal,
-              receiptName: !isDep && !S.savePersonal ? S.fCashReceiptName || null : null,
-              receiptData: !isDep && !S.savePersonal ? S.fCashReceiptData || null : null });
+              description: S.fDesc.trim() || (isDep ? 'הפקדה' : 'משיכה'), date: this.isoDate(now), createdAt: now.toISOString(),
+              pot, isBusiness: pot === 'biz',
+              receiptName: !isDep ? S.fCashReceiptName || null : null,
+              receiptData: !isDep ? S.fCashReceiptData || null : null });
           }
         });
         this.setState({ modal: null, fCashId: null });
