@@ -2189,7 +2189,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
 
 <!-- ======= סקירה ======= -->
 <sc-if value="{{ screenHome }}" hint-placeholder-val="{{ true }}">
-<div style="flex:1;overflow-y:auto;padding:60px 20px 100px;box-sizing:border-box">
+<div style="flex:1;overflow-y:auto;padding:calc(60px + env(safe-area-inset-top)) 20px calc(100px + env(safe-area-inset-bottom));box-sizing:border-box">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 2px 20px">
     <h1 style="margin:0;font-size:23px;font-weight:600;letter-spacing:-.02em;color:#111827;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ greeting }}</h1>
     <div style="display:flex;align-items:center;gap:2px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);border-radius:999px;padding:3px 4px;flex:none;box-shadow:0 4px 14px rgba(32,49,70,.05)">
@@ -2201,10 +2201,11 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
   <div style="background:radial-gradient(110% 75% at 52% 110%,rgba(81,227,238,.18) 0%,rgba(152,221,249,.12) 42%,rgba(255,255,255,0) 72%),linear-gradient(180deg,rgba(255,255,255,.80) 0%,rgba(250,252,253,.73) 40%,rgba(224,243,247,.66) 72%,rgba(199,232,238,.58) 100%);backdrop-filter:blur(28px) saturate(125%);-webkit-backdrop-filter:blur(28px) saturate(125%);border:1px solid rgba(255,255,255,.85);border-radius:32px;padding:24px;box-shadow:0 24px 70px rgba(35,52,74,.10),0 8px 24px rgba(35,52,74,.06),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.40);margin-bottom:16px">
     <div style="font-size:14px;color:#626A78;font-weight:500">הכנסה · {{ monthLabel }}</div>
     <div style="font-size:40px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:2px 0 14px;color:#111827">{{ incomeF }}</div>
+    <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;gap:8px">
-      <span style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.9);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:#149361"><span style="width:7px;height:7px;border-radius:999px;background:#149361"></span>{{ receivedF }}</span>
       <span style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.9);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:#C77E0A"><span style="width:7px;height:7px;border-radius:999px;background:#C77E0A"></span>{{ pendingF }}</span>
     </div>
+    </sc-if>
   </div>
   <div style="background:rgba(255,255,255,.62);backdrop-filter:blur(28px) saturate(125%);-webkit-backdrop-filter:blur(28px) saturate(125%);border:1px solid rgba(255,255,255,.82);border-radius:28px;padding:20px 22px;margin-bottom:16px;box-shadow:0 14px 36px rgba(32,49,70,.09),0 4px 14px rgba(32,49,70,.045),inset 0 1px 0 rgba(255,255,255,.95)">
     <div onClick="{{ openBreakdown }}" style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;cursor:pointer">
@@ -2269,7 +2270,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
 
 <!-- ======= לקוחות ======= -->
 <sc-if value="{{ screenClients }}" hint-placeholder-val="{{ false }}">
-<div style="flex:1;overflow-y:auto;padding:60px 20px 100px;box-sizing:border-box">
+<div style="flex:1;overflow-y:auto;padding:calc(60px + env(safe-area-inset-top)) 20px calc(100px + env(safe-area-inset-bottom));box-sizing:border-box">
   <div style="display:flex;align-items:center;justify-content:space-between;margin:8px 2px 20px">
     <h1 style="margin:0;font-size:32px;font-weight:600;letter-spacing:-.02em;color:#111827">לקוחות</h1>
     <button onClick="{{ openAddClient }}" class="glass-plus" style="width:62px;height:42px;border:1.5px solid rgba(255,255,255,.95);border-radius:999px;background:radial-gradient(85% 120% at 32% 28%,rgba(255,255,255,.65) 0%,rgba(255,255,255,.15) 45%,rgba(255,255,255,0) 70%),radial-gradient(140% 150% at 50% 55%,#54C4FA 0%,#76D1FB 48%,#B7E7FD 82%,#E2F6FE 100%);cursor:pointer;box-shadow:inset 0 1px 4px rgba(255,255,255,.9),inset 0 -2px 6px rgba(255,255,255,.5),0 10px 24px rgba(69,193,248,.28);display:flex;align-items:center;justify-content:center;padding:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2" stroke-linecap="round"></path></svg></button>
@@ -2433,7 +2434,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
 
 <!-- ======= פיננסים ======= -->
 <sc-if value="{{ screenFinance }}" hint-placeholder-val="{{ false }}">
-<div style="flex:1;overflow-y:auto;padding:60px 20px 100px;box-sizing:border-box">
+<div style="flex:1;overflow-y:auto;padding:calc(60px + env(safe-area-inset-top)) 20px calc(100px + env(safe-area-inset-bottom));box-sizing:border-box">
   <div style="display:flex;align-items:center;justify-content:space-between;margin:8px 2px 18px">
     <h1 style="margin:0;font-size:32px;font-weight:600;letter-spacing:-.02em;color:#111827">פיננסים</h1>
   </div>
@@ -2593,7 +2594,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
 
 <!-- ======= השראה ======= -->
 <sc-if value="{{ screenInspo }}" hint-placeholder-val="{{ false }}">
-<div style="flex:1;overflow-y:auto;padding:60px 20px 110px;box-sizing:border-box">
+<div style="flex:1;overflow-y:auto;padding:calc(60px + env(safe-area-inset-top)) 20px calc(110px + env(safe-area-inset-bottom));box-sizing:border-box">
   <div style="display:flex;align-items:center;justify-content:space-between;margin:8px 2px 18px">
     <div><h1 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-.02em;color:#111827">השראה</h1><div style="font-size:12.5px;color:#9299A5;font-weight:500;margin-top:2px">{{ inspoTodoLabel }}</div></div>
     <button onClick="{{ openAddInspo }}" class="glass-plus" title="רעיון חדש"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2" stroke-linecap="round"></path></svg></button>
@@ -2631,7 +2632,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
 </div>
 </sc-if>
 <sc-if value="{{ screenAcct }}" hint-placeholder-val="{{ false }}">
-<div style="flex:1;overflow-y:auto;padding:60px 20px 110px;box-sizing:border-box">
+<div style="flex:1;overflow-y:auto;padding:calc(60px + env(safe-area-inset-top)) 20px calc(110px + env(safe-area-inset-bottom));box-sizing:border-box">
   <div style="display:flex;align-items:center;justify-content:space-between;margin:8px 2px 18px">
     <h1 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-.02em;color:#111827">רואה חשבון</h1>
     <div style="display:flex;align-items:center;gap:2px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.86);border-radius:999px;padding:3px 4px;box-shadow:0 4px 14px rgba(32,49,70,.05)">
@@ -3855,7 +3856,8 @@ class Component extends DCLogic {
       /* The headline figure counts money that actually arrived. Invoices still
          waiting are shown beside it as צפי / ממתין, and they keep driving the
          allocation card below, which is a forecast rather than a balance. */
-      incomeF: this.fmt(received), receivedF: 'צפי ' + this.fmt(income), pendingF: 'ממתין ' + this.fmt(income - received),
+      incomeF: this.fmt(received), receivedF: 'התקבל ' + this.fmt(received),
+      pendingF: 'ממתין ' + this.fmt(income - received), hasPending: income - received > 0,
       netF: this.fmtSigned(net), s50F: this.fmt(distributable * 0.5), s25aF: this.fmt(distributable * 0.25), s25bF: this.fmt(distributable * 0.25),
       hasDed: fixedTotal + costsMonth > 0, dedF: this.fmt(fixedTotal + costsMonth) + '-',
       bdRows: [{ label: 'הכנסה · ' + base.monthLabel, amountF: this.fmt(income), color: '#149361' }]
