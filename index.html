@@ -2261,12 +2261,10 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
       </div>
       <sc-if value="{{ fixedNextChanged }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:9px">
-          <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#9299A5;font-weight:500"><span style="width:6px;height:6px;border-radius:999px;background:{{ fixedNextColor }};flex:none"></span>{{ fixedNextLabel }}</span>
-          <span style="display:flex;align-items:center;gap:8px">
-            <span style="font-size:11.5px;font-weight:600;color:{{ fixedNextColor }};background:{{ fixedNextBg }};border-radius:999px;padding:2px 8px;white-space:nowrap">{{ fixedNextDeltaF }}</span>
-            <span style="font-size:15px;font-weight:600;color:{{ fixedNextColor }};font-variant-numeric:tabular-nums">{{ fixedNextTotalF }}</span>
-          </span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:13.5px;color:#626A78;font-weight:500"><span style="width:6px;height:6px;border-radius:999px;background:{{ fixedNextColor }};flex:none"></span>{{ fixedNextLabel }}</span>
+          <span style="font-size:16px;font-weight:600;color:{{ fixedNextColor }};font-variant-numeric:tabular-nums">{{ fixedNextTotalF }}</span>
         </div>
+        <div style="font-size:11.5px;color:#9299A5;font-weight:500;margin-top:5px;text-align:left;line-height:1.5">{{ fixedNextDeltaF }}</div>
       </sc-if>
     </sc-if>
   </div>
@@ -4108,8 +4106,16 @@ class Component extends DCLogic {
          it differs, so a steady month stays quiet. */
       fixedNextChanged: nextFixedTotal !== fixedTotal,
       fixedNextTotalF: this.fmt(nextFixedTotal) + '-',
-      fixedNextLabel: 'ב' + new Date(this.shiftMonthKey(refKey, 1) + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long' }),
-      fixedNextDeltaF: (nextFixedTotal < fixedTotal ? this.fmt(fixedTotal - nextFixedTotal) + ' פחות' : this.fmt(nextFixedTotal - fixedTotal) + ' יותר'),
+      fixedNextLabel: 'יירד ב' + new Date(this.shiftMonthKey(refKey, 1) + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long' }),
+      /* Spelled out rather than shown as a bare number beside another number —
+         two figures side by side read as a riddle. */
+      fixedNextDeltaF: (() => {
+        const gap = Math.abs(nextFixedTotal - fixedTotal);
+        const month = new Date(this.shiftMonthKey(refKey, 1) + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long' });
+        return nextFixedTotal < fixedTotal
+          ? 'ב' + month + ' תשלמי ' + this.fmt(gap) + ' פחות מהחודש, כי מנויים שביטלת מפסיקים'
+          : 'ב' + month + ' תשלמי ' + this.fmt(gap) + ' יותר מהחודש, בגלל מנויים שמתחילים';
+      })(),
       fixedNextColor: nextFixedTotal < fixedTotal ? '#149361' : '#C77E0A',
       fixedNextBg: nextFixedTotal < fixedTotal ? 'rgba(214,244,229,.9)' : 'rgba(255,240,214,.95)',
       /* Cancelled subscriptions stay on the list instead of vanishing: one month
