@@ -2886,6 +2886,7 @@ input:focus{outline:2px solid rgba(84,196,250,.55)}
     <sc-if value="{{ fixedEditing }}" hint-placeholder-val="{{ false }}">
       <button onClick="{{ cancelFixed }}" style="width:100%;border:1px solid rgba(216,73,73,.3);border-radius:26px;min-height:48px;margin-top:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Assistant',sans-serif;background:rgba(255,255,255,.7);color:#D84949">{{ fixedCancelLabel }}</button>
       <div style="font-size:12px;color:#9299A5;font-weight:500;text-align:center;margin-top:8px;line-height:1.5">{{ fixedCancelHint }}</div>
+      <button onClick="{{ eraseFixed }}" style="width:100%;border:none;background:none;margin-top:12px;font-size:12px;font-weight:500;color:#AEB4BE;cursor:pointer;font-family:'Assistant',sans-serif;text-decoration:underline;padding:4px">{{ eraseFixedLabel }}</button>
     </sc-if>
   </sc-if>
 
@@ -4068,13 +4069,12 @@ class Component extends DCLogic {
           : f.name + ' · ' + this.fmt(f.amount)) + (f.isPersonal ? ' · אישי' : '') + (f.endMonth === refKey ? ' · חודש אחרון' : ''),
         edit: () => this.setState({ modal: 'fixed', fFixId: f.id, fFixName: f.name, fFixAmt: String(f.amount), fFixCur: f.currency || 'ILS',
           fFixReceiptName: f.receiptName || '', fFixReceiptData: f.receiptData || '' }),
-        /* A charge that has already run through earlier months is closed at the
-           current month, so those months keep their figures. One that started
-           this month has no history worth keeping and is simply removed. */
+        /* Cancelling closes the charge at the current month and never deletes it.
+           The month you are in was already paid for — including one you signed up
+           for today — so it has to keep counting. Erasing a charge outright is a
+           separate action, for typing mistakes only. */
         del: () => this.upd(x => {
-          const v = x.fixed.find(z => z.id === f.id); if (!v) return;
-          if ((v.startMonth || '2000-01') >= nowKey) x.fixed = x.fixed.filter(z => z.id !== f.id);
-          else v.endMonth = nowKey;
+          const v = x.fixed.find(z => z.id === f.id); if (v) v.endMonth = nowKey;
         }) })),
       hasUsd: fixedRunning.some(f => f.currency === 'USD'),
       rateNote: 'המרה לפי שער דולר נוכחי: ₪' + (S.usdRate || 3.7).toFixed(2) + ' לדולר, מתעדכן אוטומטית',
@@ -4090,23 +4090,20 @@ class Component extends DCLogic {
         if (st === '2000-01') return 'פעיל · נספר בכל החודשים עד היום';
         return 'פעיל מאז ' + new Date(st + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long', year: 'numeric' });
       })(),
-      fixedCancelLabel: (() => {
-        const f = d.fixed.find(z => z.id === S.fFixId); if (!f) return 'ביטול המנוי';
-        return (f.startMonth || '2000-01') >= nowKey ? 'מחיקת המנוי' : 'ביטול המנוי';
-      })(),
+      fixedCancelLabel: 'ביטול המנוי',
       fixedCancelHint: (() => {
-        const f = d.fixed.find(z => z.id === S.fFixId); if (!f) return '';
         const thisMonth = new Date(nowKey + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long' });
         const next = new Date(this.shiftMonthKey(nowKey, 1) + '-01T12:00:00').toLocaleDateString('he-IL', { month: 'long' });
-        return (f.startMonth || '2000-01') >= nowKey
-          ? 'נוסף החודש ועדיין לא נספר באף חודש סגור, אז הוא יימחק לגמרי'
-          : 'ייספר עד סוף ' + thisMonth + ' ויפסיק מ' + next + '. החודשים שעברו נשארים כמו שהם';
+        return 'כבר שילמת עליו ב' + thisMonth + ', אז ' + thisMonth + ' עדיין נספר. החיוב נפסק מ' + next + ', והחודשים שעברו לא זזים';
       })(),
       cancelFixed: () => { this.upd(x => {
-          const v = x.fixed.find(z => z.id === S.fFixId); if (!v) return;
-          if ((v.startMonth || '2000-01') >= nowKey) x.fixed = x.fixed.filter(z => z.id !== S.fFixId);
-          else v.endMonth = nowKey;
+          const v = x.fixed.find(z => z.id === S.fFixId); if (v) v.endMonth = nowKey;
         }); this.setState({ modal: null, fFixId: null }); },
+      /* Kept apart from cancelling, and worded so it cannot be mistaken for it:
+         this one really does erase the charge from every month it appeared in. */
+      eraseFixedLabel: 'הוספתי בטעות · מחיקה מכל החודשים',
+      eraseFixed: () => { this.upd(x => { x.fixed = x.fixed.filter(z => z.id !== S.fFixId); });
+        this.setState({ modal: null, fFixId: null }); },
       fFixName: S.fFixName, hFixName: e => this.setState({ fFixName: e.target.value }),
       fFixAmt: S.fFixAmt, hFixAmt: e => this.setState({ fFixAmt: e.target.value }),
       hFixReceipt: async e => { const f = e.target.files && e.target.files[0]; if (f) { let data = ''; try { data = await this.readFileData(f); } catch(err) {} this.setState({ fFixReceiptName: f.name, fFixReceiptData: data }); } },
